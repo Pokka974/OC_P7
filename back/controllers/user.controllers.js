@@ -6,30 +6,28 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 
 require('dotenv').config()
 
-exports.getAllUsers = (req, res, next) => {
-    User.findAll()
-        .then((users) => {
+exports.getAllUsers = async (req, res, next) => {
+    const users = await User.findAll()
+        if(users){
             if(!users) { res.stats(404).json( { error: `Can't find any users`} )}
             
             res.status(200).json(users)
-        })
-        .catch((error) => {
+        } else{
             res.status(500).json( { error: 'Unable to access to the posts in DB'} )
-        })
+        }
 }
 
-exports.getOneUsers = (req, res, next) => {
-    const foundUser = User.findOne(
-        { 
-            where: { id: req.params.id }
-        })
-        .then(foundUser => {
-            res.status(200).json({ message: 'Successfuly found the user ' + foundUser.username})
-            
-        })
-        .catch(error => {
-            res.status(404).json( {error : "User not found"} )
-        })
+exports.getOneUser = async (req, res, next) => {
+    
+    const foundUser = await User.findOne({ 
+        where: { id: req.params.id }
+    })
+    
+    if(foundUser){
+        res.status(200).json({ message: 'Successfuly found the user ' + foundUser.username})
+    }else{
+        res.status(404).json( {error : "User not found"} )
+    }
 }
 
 exports.signup = async (req, res, next) => {
@@ -80,7 +78,7 @@ exports.signup = async (req, res, next) => {
     }
 }
 
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
 
     let email = req.body.email
     let password = req.body.password
@@ -91,10 +89,10 @@ exports.login = (req, res, next) => {
 
     //TODO: verify mail regex & password length
 
-    User.findOne({
+    const userFound = await User.findOne({
         where: { email: email }
     })
-    .then(userFound => {
+    if(userFound){
         bcrypt.compare(password, userFound.password)
             .then(valid => {
                 if(!valid){
@@ -109,10 +107,9 @@ exports.login = (req, res, next) => {
                     )
                 })
             })
-    })
-    .catch(error =>{
-        return res.status(500).json({ error: 'Unable to verify user' })
-    })
+    } else {
+        return res.status(500).json({ error: 'Unable to verify user, the email might be incorrect' })
+    }
 }
 
 exports.updateUser = async (req, res, next) => {
@@ -124,13 +121,18 @@ exports.updateUser = async (req, res, next) => {
         if(userFound.id === req.auth.userId){
             // Test which value is different from the original 
             for(let i in req.body){
-                //TODO: verify the email regex, password validation, attachent URL and unable to change is_admin, created_at
-                userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
+                //TODO: verify the email regex, password validation, attachment URL
+                //TODO: call password-validator here ??
+                if(i != 'is_admin' && i != 'created_at'){
+                    userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
+                } else {
+                    return res.status(401).json({ error: 'Unauthorized action '})
+                }
             }
             userFound.updated_at = new Date()
             // ave all the changes in DB
             userFound.save()
-            return res.status(200).json({ message: 'User updated !' })
+            return res.status(201).json({ message: 'User updated !' })
         } else {
             return res.status(401).json({ error: 'Unauthorized action'})
         }
@@ -140,6 +142,26 @@ exports.updateUser = async (req, res, next) => {
     }
 }
 
-exports.deleteUser = (req, res, next) => {
+exports.deleteUser = async (req, res, next) => {
 
+    const userFound = await User.findOne({
+        where: { id: req.params.id }
+    })
+
+    if(userFound){
+        if(userFound.id === req.auth.userId){
+
+            const count = await User.destroy({
+                where: { id: userFound.id }
+            })
+            
+            if(count) res.status(204).json({ message: `${count} User successfully deleted` })
+            else res.status(404)
+            
+        } else {
+            return res.status(401).json({ error: 'Unauthorized action' })
+        }
+    } else {
+        return res.status(404).json({ error: 'user not found' })
+    }
 }
