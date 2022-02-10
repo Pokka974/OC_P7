@@ -7,15 +7,27 @@ require('dotenv').config()
 exports.getAllUsers = (req, res, next) => {
     User.findAll()
         .then((users) => {
+            if(!users) { res.stats(404).json( { error: `Can't find any users`} )}
+            
             res.status(200).json(users)
         })
         .catch((error) => {
-            res.status(404).json( error )
+            res.status(500).json( { error: 'unable to access to the posts in DB'} )
         })
 }
 
 exports.getOneUsers = (req, res, next) => {
-
+    const foundUser = User.findOne(
+        { 
+            where: { id: req.params.id }
+        })
+        .then(foundUser => {
+            res.status(200).json({ message: 'successfuly found the user ' + foundUser.username})
+            
+        })
+        .catch(error => {
+            res.status(404).json( {error : "User not found"} )
+        })
 }
 
 exports.signup = async (req, res, next) => {
