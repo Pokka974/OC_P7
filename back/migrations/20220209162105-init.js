@@ -57,6 +57,14 @@ module.exports = {
           key: 'id'
         }
       },
+      post_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'post',
+          key: 'id'
+        }
+      },
       post_type: {
         allowNull: false,
         type: Sequelize.STRING(20)

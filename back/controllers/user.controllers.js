@@ -8,13 +8,10 @@ require('dotenv').config()
 
 exports.getAllUsers = async (req, res, next) => {
     const users = await User.findAll()
-        if(users){
-            if(!users) { res.stats(404).json( { error: `Can't find any users`} )}
-            
-            res.status(200).json(users)
-        } else{
-            res.status(500).json( { error: 'Unable to access to the posts in DB'} )
-        }
+        
+    if(!users) { res.stats(404).json( { error: `Can't find any users`} )}
+    
+    res.status(200).json(users)  
 }
 
 exports.getOneUser = async (req, res, next) => {
@@ -31,7 +28,7 @@ exports.getOneUser = async (req, res, next) => {
 }
 
 exports.signup = async (req, res, next) => {
-    console.log(req.body);
+    
     // Params
     let email = req.body.email;
     let username = req.body.username;
@@ -123,7 +120,7 @@ exports.updateUser = async (req, res, next) => {
             for(let i in req.body){
                 //TODO: verify the email regex, password validation, attachment URL
                 //TODO: call password-validator here ??
-                if(i != 'is_admin' && i != 'created_at'){
+                if(i != 'is_admin' && i != 'created_at' && i != 'updated_at'){
                     userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
                 } else {
                     return res.status(401).json({ error: 'Unauthorized action '})

@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
             }else{
                 const userId = decodedToken.userId;
                 const isAdmin = decodedToken.isAdmin;
-                console.log(userId, isAdmin);
+                console.log('UserId',userId,'isAdmin', isAdmin);
                 req.auth = { userId, isAdmin };
                 if (req.body.userId && req.body.userId !== userId) {
                     throw new Error('Invalid user ID');

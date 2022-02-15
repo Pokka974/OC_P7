@@ -10,15 +10,23 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         associate(models) {
-        // define association here
-        this.hasMany(models.Like)
-        this.userId = this.belongsTo(models.User, {
-            foreignKey: 'user_id',
-            });
+            // define association here
+            this.hasMany(models.Like)
+            this.userId = this.belongsTo(models.User, {
+                foreignKey: 'user_id',
+            })
+                
+            this.hasMany(this)
+            this.postId = this.belongsTo(this, {
+                foreignKey: 'post_id'
+            })
         }
+        
     }
     Post.init(
         {
+            user_id: DataTypes.INTEGER,
+            post_id: DataTypes.INTEGER,
             post_type: DataTypes.STRING,
             content: DataTypes.TEXT,
             attachment: DataTypes.STRING,
