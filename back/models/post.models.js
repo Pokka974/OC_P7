@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
             post_type: DataTypes.STRING,
             content: DataTypes.TEXT,
             attachment: DataTypes.STRING,
+            likes: DataTypes.INTEGER,
             createdAt: {
                 type: DataTypes.DATE,
                 field: 'created_at',

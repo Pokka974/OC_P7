@@ -5,6 +5,19 @@ module.exports = (sequelize, DataTypes) => {
     class Like extends Model {
 
         associate(models) {
+
+            models.User.belongsToMany(models.Post, {
+                through: this,
+                foreignKey: 'user_id',
+                otherKey: 'post_id'
+            })
+
+            models.Post.belongsToMany(models.User, {
+                through: this,
+                foreignKey: 'post_id',
+                otherKey: 'user_id'
+            })
+            
             // define association here
             this.userId = this.belongsTo(models.User, {
                 foreignKey: 'user_id'
