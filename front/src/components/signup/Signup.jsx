@@ -1,14 +1,17 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Formik, Field } from 'formik'
 import * as Yup from 'yup';
-import welcomeImg from '../../assets/welcome-image.jpg'
-import icon from '../../assets/icons/icon.png'
+import { Link, useNavigate } from 'react-router-dom'
 import groupomania from '../../assets/icons/icon-above-font.png'
 import api from '../../conf/apiConf'
+import welcomeImg from '../../assets/welcome-image.jpg'
+import icon from '../../assets/icons/icon.png'
 
-export default class Signup extends Component {
+const Signup = ({authenticate}) => {
 
-    submit = (values, actions) => {
+    const navigate = useNavigate()
+
+    const submit = (values, actions) => {
         const newUser = {
             username: values.name,
             email: values.email,
@@ -19,18 +22,28 @@ export default class Signup extends Component {
                 console.log(res)
                 actions.setSubmitting(false)
                 actions.resetForm()
+
+                let authUser = {
+                    isLoggedIn: true,
+                    isAdmin: res.data.isAdmin,
+                    id: res.data.userId,
+                    username: res.data.username,
+                    token: res.data.token
+                }
+
+                authenticate(authUser)
+                navigate('feed')
             })
             .catch(err => console.log(err))
     }
 
-    userSchema = Yup.object().shape({
+    const userSchema = () => Yup.object().shape({
         name: Yup.string('String').min(4, 'Trop court').max(20, 'Trop long').required('Champ requis'),
         email: Yup.string().email("L'email doit être valide").required('Champ requis'),
         password: Yup.string().min(5, 'Trop court').required('Champ requis')
       });
-
-    render() {
-        return (
+      
+    return (
         <div className='flex flex-col-reverse md:flex-row'>
             <div className='w-full relative md:w-3/5'>
                 <img className='object-cover h-screen w-full blur-sm' alt='presentation' src={welcomeImg}/>
@@ -40,12 +53,12 @@ export default class Signup extends Component {
                 <img className='w-2/3' alt='logo groupomania' src={groupomania} />
                 <h2 className='self-start mt-16 mx-16 h-16 text-xl font-bold'>Créez votre compte</h2>
                 <Formik
-                    onSubmit={this.submit}
+                    onSubmit={submit}
                     initialValues={ { name: '', email: '', password: ''} }
-                    validationSchema={this.userSchema}
+                    validationSchema={userSchema}
                 >
                     {(  {handleChange, handleBlur, handleSubmit, isSubmitting, errors, touched}) => (
-                        <form className='w-4/5 flex flex-col gap-y-4' onSubmit={ handleSubmit }>
+                        <form className='w-4/5 flex flex-col gap-y-4 mt-2' onSubmit={ handleSubmit }>
                             <Field className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='name' name='name' placeholder='Nom et Prénom' onChange={handleChange} onBlur={handleBlur} />
                             {errors.name && touched.name && <div className="text-red-500">{errors.name}</div>}
                             <Field className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='email' name='email' placeholder='Email' onChange={handleChange} onBlur={handleBlur} />
@@ -57,9 +70,12 @@ export default class Signup extends Component {
                     )}
                 </Formik>
                 <h2 className='self-start mt-8 mx-16 h-16 text-xl font-bold'>Déjà inscrit ?</h2>
-                <button className='w-4/5 border bg-white hover:bg-blue-400 hover:text-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='button'>Se Connecter</button>
+                <Link className='w-4/5' to='/login'>
+                    <button className='w-full border bg-white hover:bg-blue-400 hover:text-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='button'>Se Connecter</button>
+                </Link>
             </div>
         </div>
-        )
-    }
+    )
 }
+
+export default Signup

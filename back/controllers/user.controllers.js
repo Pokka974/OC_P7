@@ -97,6 +97,9 @@ exports.login = async (req, res, next) => {
                 }
                 res.status(200).json({
                     userId: userFound.id,
+                    username: userFound.username,
+                    attachment: userFound.attachment,
+                    isAdmin: userFound.is_admin,
                     token: jwt.sign(
                         { userId: userFound.id, isAdmin: userFound.is_admin },
                         process.env.SECRET_KEY,
