@@ -9,7 +9,7 @@ const Feed = () => {
     <>
       <Header />
       <main className='flex flex-col-reverse md:flex-row'>
-        <Navbar />
+        {/* <Navbar /> */}
         <Posts />
       </main>
     </>

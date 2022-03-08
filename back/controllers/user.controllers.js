@@ -60,9 +60,17 @@ exports.signup = async (req, res, next) => {
                     created_at: new Date(),
                     updated_at: new Date()
                 })
-                .then(newUser => {
+                .then(userFound => {
                     return res.status(201).json({
-                        userId: newUser.id
+                        userId: userFound.id,
+                        username: userFound.username,
+                        attachment: userFound.attachment,
+                        isAdmin: userFound.is_admin,
+                        token: jwt.sign(
+                            { userId: userFound.id, isAdmin: userFound.is_admin },
+                            process.env.SECRET_KEY,
+                            {expiresIn: '1h'}
+                    )
                     })
                 })
                 .catch(err => {

@@ -24,11 +24,7 @@ const Signup = ({authenticate}) => {
                 actions.resetForm()
 
                 let authUser = {
-                    isLoggedIn: true,
-                    isAdmin: res.data.isAdmin,
-                    id: res.data.userId,
-                    username: res.data.username,
-                    token: res.data.token
+                    ...res.data
                 }
 
                 authenticate(authUser)

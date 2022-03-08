@@ -45,7 +45,7 @@ export default function Post({authorId, message, timestamp, image}) {
             </div>
 
             {image && (
-                <div className='relative h-56 md:h-96 bg-white'>
+                <div className='relative h-50 md:h-96 bg-white'>
                     <img 
                         src={image}
                         objectFit='cover'
