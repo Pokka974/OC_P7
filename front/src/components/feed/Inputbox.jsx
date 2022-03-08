@@ -16,7 +16,7 @@ export default function Inputbox() {
         
         let content = {
             content: inputRef.current.value,
-            attachment: ''
+            attachment: 'https://www.melty.fr/wp-content/uploads/meltyfr/2022/02/media-43158.jpg'
         }
 
         api.post('post', content, {

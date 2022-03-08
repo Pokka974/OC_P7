@@ -21,7 +21,7 @@ exports.getOneUser = async (req, res, next) => {
     })
     
     if(foundUser){
-        res.status(200).json({ message: 'Successfuly found the user ' + foundUser.username})
+        res.status(200).json(foundUser)
     }else{
         res.status(404).json( {error : "User not found"} )
     }
