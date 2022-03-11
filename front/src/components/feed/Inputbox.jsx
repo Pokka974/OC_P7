@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useContext } from 'react'
 import api from '../../conf/apiConf'
 
 export default function Inputbox() {
+
 
     const [user, setUser] = useState(() => {
         return JSON.parse(localStorage.getItem('user'))

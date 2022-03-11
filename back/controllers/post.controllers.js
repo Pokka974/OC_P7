@@ -27,6 +27,21 @@ exports.getOnePost = (req, res, next) => {
         })
 }
 
+exports.getComments =  (req, res, next) => {
+
+    Post.findAll({
+        where: { post_id: req.params.id }
+    })
+    .then((posts) => {
+        if(!posts || posts.length === 0){ res.status(404).json({ error: 'Can\'t find any posts' })}
+        
+        res.status(200).json(posts)
+    })
+    .catch((error) => {
+        res.status(500).json( {error: 'unable to access to the posts in DB'} )
+    })
+}
+
 exports.addPost = async (req, res, next) => {
 
     // set the post_type
@@ -61,10 +76,10 @@ exports.addPost = async (req, res, next) => {
 
 exports.addResponse = async (req, res, next) => {
     
-    // set the post_type
+    console.log('Adding respongse');    // set the post_type
     let postReference = req.params.id ? req.params.id : '';
     let post_type = 'response'
-
+    console.log(postReference);
     // Get the content
     let content = req.body.content
 

@@ -4,7 +4,7 @@ export { default as Feed } from './feed/Feed'
 
 export {default as Header } from './feed/Header'
 export {default as Navbar } from './feed/Navbar'
-export {default as Posts } from './feed/Posts'
+export {default as PostsContainer } from './feed/PostsContainer'
 export {default as Inputbox} from './feed/Inputbox'
 export {default as AllPosts} from './feed/AllPosts'
 export {default as Post} from './feed/Post'

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Routes, Route, Navigate} from 'react-router-dom'
 import { Signup, Login, Feed } from './components'
 
-
-
 function App(){
   const [user, setUser] = useState(null)
 
