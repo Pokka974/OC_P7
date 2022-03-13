@@ -115,10 +115,6 @@ module.exports = {
           key: 'id'
         }
       },
-      post_type: {
-        allowNull: false,
-        type: Sequelize.STRING(20)
-      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

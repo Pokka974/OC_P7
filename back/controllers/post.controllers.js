@@ -7,10 +7,10 @@ exports.getAllPosts = (req, res, next) => {
         .then((posts) => {
             if(!posts || posts.length === 0){ res.status(404).json({ error: 'Can\'t find any posts' })}
             
-            res.status(200).json(posts)
+            return res.status(200).json(posts)
         })
         .catch((error) => {
-            res.status(500).json( {error: 'unable to access to the posts in DB'} )
+            return res.status(500).json( {error: 'unable to access to the posts in DB'} )
         })
 }   
 
@@ -20,10 +20,10 @@ exports.getOnePost = (req, res, next) => {
             where: { id: req.params.id }
         })
         .then(foundPost => {
-            res.status(200).json({foundPost})
+            return res.status(200).json({foundPost})
         })
         .catch(error => {
-            res.status(404).json( {error : "Post not found"} )
+            return res.status(404).json( {error : "Post not found"} )
         })
 }
 
@@ -33,12 +33,12 @@ exports.getComments =  (req, res, next) => {
         where: { post_id: req.params.id }
     })
     .then((posts) => {
-        if(!posts || posts.length === 0){ res.status(404).json({ error: 'Can\'t find any posts' })}
+        if(!posts || posts.length === 0){ return res.status(404).json({ error: 'Can\'t find any posts' })}
         
-        res.status(200).json(posts)
+        return res.status(200).json(posts)
     })
     .catch((error) => {
-        res.status(500).json( {error: 'unable to access to the posts in DB'} )
+        return res.status(500).json( {error: 'unable to access to the posts in DB'} )
     })
 }
 
@@ -158,8 +158,8 @@ exports.deletePost = async (req, res, next) => {
                 where: { id: concernedPost.id }
             })
 
-            if(count) res.status(204).json({ message: `${count} Post successfully deleted` })
-            else res.status(404).json({ error : 'post not found' })
+            if(count) return res.status(204).json({ message: `${count} Post successfully deleted` })
+            else return res.status(404).json({ error : 'post not found' })
         } else {
             return res.status(401).json({ error: 'unauthorized action ' })
         }

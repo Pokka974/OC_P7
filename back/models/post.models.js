@@ -11,7 +11,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         associate(models) {
             // define association here
-            this.hasMany(models.Like)
+            this.hasMany(models.Like, {
+                foreignKey: 'likes'
+            })
             this.userId = this.belongsTo(models.User, {
                 foreignKey: 'user_id',
             })

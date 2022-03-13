@@ -9,9 +9,9 @@ require('dotenv').config()
 exports.getAllUsers = async (req, res, next) => {
     const users = await User.findAll()
         
-    if(!users) { res.stats(404).json( { error: `Can't find any users`} )}
-    
-    res.status(200).json(users)  
+    if(!users) { return res.stats(404).json( { error: `Can't find any users`} )}
+    else{ return res.status(200).json(users) }
+      
 }
 
 exports.getOneUser = async (req, res, next) => {
@@ -21,9 +21,9 @@ exports.getOneUser = async (req, res, next) => {
     })
     
     if(foundUser){
-        res.status(200).json(foundUser)
+        return res.status(200).json(foundUser)
     }else{
-        res.status(404).json( {error : "User not found"} )
+        return res.status(404).json( {error : "User not found"} )
     }
 }
 
@@ -36,7 +36,7 @@ exports.signup = async (req, res, next) => {
     console.log(email);
     console.log(username);
     console.log(password);
-    if(email == null || username == null || password == null) {return res.status(400).json({ error: 'Missing paramaters' })}
+    if(email == null || username == null || password == null) { return res.status(400).json({ error: 'Missing paramaters' })}
 
     
     //verify pseudo length, mail regex...
@@ -78,7 +78,7 @@ exports.signup = async (req, res, next) => {
                 })
             })
             .catch(error => {
-                res.status(500).json({ error })
+                return res.status(500).json({ error })
             })
     }
 }
@@ -111,7 +111,7 @@ exports.login = async (req, res, next) => {
                     token: jwt.sign(
                         { userId: userFound.id, isAdmin: userFound.is_admin },
                         process.env.SECRET_KEY,
-                        {expiresIn: '1h'}
+                        {expiresIn: '24h'}
                     )
                 })
             })
@@ -163,8 +163,8 @@ exports.deleteUser = async (req, res, next) => {
                 where: { id: userFound.id }
             })
             
-            if(count) res.status(204).json({ message: `${count} User successfully deleted` })
-            else res.status(404)
+            if(count) return res.status(204).json({ message: `${count} User successfully deleted` })
+            else return res.status(404)
             
         } else {
             return res.status(401).json({ error: 'Unauthorized action' })

@@ -1,18 +1,12 @@
-import React, { useRef, useState, useContext } from 'react'
+import React, { useRef } from 'react'
 import api from '../../conf/apiConf'
 
-export default function Inputbox() {
+export default function Inputbox({token, user, update}) {
 
-
-    const [user, setUser] = useState(() => {
-        return JSON.parse(localStorage.getItem('user'))
-    })
-    
     const inputRef = useRef(null)
 
     const sendPost = (e) => {
         e.preventDefault()
-        console.log(user.token);
         if(!inputRef.current.value) return
         
         let content = {
@@ -22,10 +16,10 @@ export default function Inputbox() {
 
         api.post('post', content, {
             headers: {
-                authorization: `Bearer ${user.token}`
+                authorization: `Bearer ${token}`
             }
         })
-            .then(res => console.log(res))
+            .then(res => update())
             .catch(err => console.log(err))
 
         inputRef.current.value = ''

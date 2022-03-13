@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import api from '../../conf/apiConf'
-export default function Post({user, post}) {
+import Comment from './Comment'
+export default function Post({user, post, token}) {
     
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
+    const [likes, setLikes] = useState(0)
+
     const inputRef = useRef(null)
-    const currentUser = JSON.parse(localStorage.getItem('user'))
-    //is a comment? 
+
+
     useEffect(() => {
-        
         let isMounted = true
         api.get(`user/${post.user_id}`, {
             headers: {
-                authorization: `Bearer ${currentUser.token}`
+                authorization: `Bearer ${token}`
             }
         })
             .then(res => {
@@ -25,18 +27,25 @@ export default function Post({user, post}) {
     }, [])
 
     useEffect(() => {
-        console.log(post.id);
-            api.get(`post/comments/${post.id}`, {
-                headers: {
-                    Authorization: `Bearer ${currentUser.token}`
+            refreshComments()
+    }, [])
+
+    useEffect(() => {
+        api.get(`like/${post.id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then((res) => {
+            if(res){
+                if(res.data.length){
+                    console.log(res.data);
+                    setLikes(res.data.length)
                 }
-            })
-                .then((res) => {
-                    setComments(res.data)
-                } )
-                .catch((err) => console.log(err))
-        
-    })
+            }
+        })
+        .catch((err) => console.log(err))
+    }, [])
 
     const sendPost = (e) => {
         e.preventDefault()
@@ -47,11 +56,24 @@ export default function Post({user, post}) {
         }
         api.post(`post/${post.id}`, newComment, {
             headers: {
-                authorization: `Bearer ${currentUser.token}`
+                authorization: `Bearer ${token}`
             }
         })
-            .then(res => console.log(res))
+            .then(res => refreshComments())
             .catch(err => console.log(err))
+
+    }
+
+    const refreshComments = () => {
+        api.get(`post/comments/${post.id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                setComments(res.data)
+            } )
+            .catch((err) => console.log(err))
     }
 
     const focusOnComment = () => {
@@ -59,8 +81,29 @@ export default function Post({user, post}) {
         inputRef.current.placeholder = ''
     }
 
+    const like = () => {
+        console.log('like');
+        const like = {
+            user_id: user.id,
+            post_id: post.id,
+            post_type: post.post_type,
+            created_ad: new Date(),
+            updated_at: new Date()
+        }
+        api.post(`like/${post.id}`, like, {
+            headers:{
+                autheorization: 'Bearer ' + token
+            }
+        })
+
+        setLikes(likes + 1)
+    }
+
     return (
         <div className='flex flex-col'>
+
+            {/* POST CONTENT + USER INFO */}
+
             <div className='p-5 bg-white mt-5 rounded-t-2xl shadow-md'>
                 <div className='flex items-center space-x-2'>
                     <img 
@@ -72,7 +115,7 @@ export default function Post({user, post}) {
                     />
 
                     <div>
-                        <p className='font-medium'>{author?.username}</p>
+                        <p className='font-bold'>{author?.username}</p>
                         <p className='text-xs text-gray-4000'>
                             {new Date(post.createdAt)?.toLocaleString()}
                         </p>
@@ -82,8 +125,10 @@ export default function Post({user, post}) {
                 <p className='pt-4'>{post.content}</p>
             </div>
 
+            {/* POST ATTACHMENT */}
+
             {post.attachment && (
-                <div className='relative h-50 object-cover md:h-96 bg-white'>
+                <div className='relative h-50 object-cover md:h-70 bg-white'>
                     <img 
                         src={post.attachment}
                         layout='fill'
@@ -91,12 +136,22 @@ export default function Post({user, post}) {
                     />
                 </div>
             )}
-
+            
+            
+            {likes > 0 &&  (
+                <div className='bg-white flex items-center space-x-1 p-2 pl-5'>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6" viewBox="0 0 20 20" fill="red">
+                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                    </svg>
+                    <p className='font-medium text-lg'>{likes}</p>
+                </div>
+            )}
+            
             {/* Footer of the post */}
 
             <div className='flex justify-evenly items-center  bg-white
-            shadow-md text-gray-400 border-t'>
-                <div className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl'>
+            text-gray-400 border-t'>
+                <div onClick={like} className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5" viewBox="0 0 20 20" fill="red">
                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
@@ -113,7 +168,19 @@ export default function Post({user, post}) {
 
             {/* COMMENTS SECTION */}
             
-            <div className='bg-white rounded-b-2xl shadow-md text-gray-500 font-medium border-t'>
+            <div className='bg-white text-gray-500 font-medium border-t rounded-b-2xl shadow-md'>
+                
+                {/* All the comments must be here */}
+                {comments && (
+                    comments.map((c) => <Comment 
+                        key={c.id}
+                        comment={c}
+                        token={token}
+                    />)
+                )}
+
+                {/* INPUT TO ADD A NEW COMMENT */}
+
                 <div className='flex space-x-4 p-4 items-center'>
                     <img 
                         className='rounded-full'
@@ -134,8 +201,8 @@ export default function Post({user, post}) {
                         <button className='pl-2' onClick={sendPost}>Envoyer</button>
                     </form>
                 </div>
-                {/* All the comments must be here */}
             </div>
+            
         </div>
 
         // render all the comments here

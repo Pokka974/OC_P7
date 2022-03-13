@@ -28,7 +28,7 @@ const Feed = () => {
   return (
     <UserContext.Provider value={user}>
       <Header />
-      <main className='flex flex-col-reverse md:flex-row'>
+      <main className=''>
         {/* <Navbar /> */}
         <PostsContainer user={user} />
       </main>
