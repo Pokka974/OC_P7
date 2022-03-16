@@ -1,11 +1,10 @@
-const Like = require('../models').like
+const Like = require('../models').likes
 
 
 exports.getLikeFromPost = async (req, res , next) => {
     const likes = await Like.findAll({
         where: {post_id: req.params.id}
     })
-    console.log(likes);
     if(!likes) { return res.status(404).json({error: 'Likes not found'}) }
     else { return res.status(200).json(likes) }
     

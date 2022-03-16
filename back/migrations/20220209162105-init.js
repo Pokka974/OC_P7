@@ -92,7 +92,7 @@ module.exports = {
       }
     });
 
-    await queryInterface.createTable('like', {
+    await queryInterface.createTable('likes', {
       id: {
         allowNull: false,
         autoIncrement: true,

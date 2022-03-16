@@ -1,11 +1,10 @@
 const { post } = require('../routes/user.routes')
-
 const Post = require('../models').post
 
 exports.getAllPosts = (req, res, next) => {
     Post.findAll()
         .then((posts) => {
-            if(!posts || posts.length === 0){ res.status(404).json({ error: 'Can\'t find any posts' })}
+            if(!posts || posts.length === 0){ return res.status(404).json({ error: 'Can\'t find any posts' })}
             
             return res.status(200).json(posts)
         })
@@ -47,13 +46,6 @@ exports.addPost = async (req, res, next) => {
     // set the post_type
     let post_type = 'original'
 
-    // Get the content
-    let content = req.body.content
-
-    // Get the attachment
-    // TODO: Check if the attachment is available
-    let attachment = req.body.attachment ? req.body.attachment : null
-
     // Get the author
     let author = req.auth.userId
 
@@ -61,8 +53,8 @@ exports.addPost = async (req, res, next) => {
     const newPost = await Post.create({
         user_id : parseInt(author),
         post_type : post_type,
-        content : content,
-        attachment : attachment,
+        content : req.body.textContent,
+        attachment :  `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         created_at : new Date(),
         updated_at : new Date()
     })

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         associate(models) {
             // define association here
             this.hasMany(models.Like, {
+                onDelete: 'cascade',
                 foreignKey: 'likes'
             })
             this.userId = this.belongsTo(models.User, {

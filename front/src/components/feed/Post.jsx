@@ -6,12 +6,13 @@ export default function Post({user, post, token}) {
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
     const [likes, setLikes] = useState(0)
+    const [imageToShow, setImageToShow] = useState(null)
 
     const inputRef = useRef(null)
 
 
     useEffect(() => {
-        let isMounted = true
+        console.log('POST  :  ' + post.attachment);        let isMounted = true
         api.get(`user/${post.user_id}`, {
             headers: {
                 authorization: `Bearer ${token}`
@@ -47,9 +48,21 @@ export default function Post({user, post, token}) {
         .catch((err) => console.log(err))
     }, [])
 
+    // INTIALIZE THE IMAGE TO SHOW WITH FILE READER
+    // useEffect(() => {
+    //     const fr = new FileReader()
+    //     if(post.attachment) { fr.readAsDataURL(post.attachment) }
+
+    //     fr.onload = (e) => {
+    //         setImageToShow(e.target.result)
+    //     }
+    // })
+
     const sendPost = (e) => {
         e.preventDefault()
         
+        if(!inputRef.current.value) return
+
         const newComment = {
             attachment : '',
             content: inputRef.current.value,
@@ -62,6 +75,7 @@ export default function Post({user, post, token}) {
             .then(res => refreshComments())
             .catch(err => console.log(err))
 
+        inputRef.current.value = ''
     }
 
     const refreshComments = () => {
@@ -128,7 +142,7 @@ export default function Post({user, post, token}) {
             {/* POST ATTACHMENT */}
 
             {post.attachment && (
-                <div className='relative h-50 object-cover md:h-70 bg-white'>
+                <div className='relative h-50 object-cover md:h-70 flex justify-center bg-white'>
                     <img 
                         src={post.attachment}
                         layout='fill'
@@ -151,14 +165,14 @@ export default function Post({user, post, token}) {
 
             <div className='flex justify-evenly items-center  bg-white
             text-gray-400 border-t'>
-                <div onClick={like} className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl'>
+                <div onClick={like} className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl cursor-pointer hover:font-bold'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5" viewBox="0 0 20 20" fill="red">
                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
                     <p>J'aime</p>
                 </div>
 
-                <div className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl' onClick={focusOnComment}>
+                <div className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl cursor-pointer hover:font-bold' onClick={focusOnComment}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5" fill="none" viewBox="0 0 24 24" stroke="blue" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
@@ -176,6 +190,7 @@ export default function Post({user, post, token}) {
                         key={c.id}
                         comment={c}
                         token={token}
+                        user={user}
                     />)
                 )}
 

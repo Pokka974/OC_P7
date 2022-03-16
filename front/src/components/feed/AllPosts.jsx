@@ -1,24 +1,16 @@
 import { Post } from '../../components'
-import InfiniteScroll from 'react-infinite-scroll-component'
 
 export default function AllPosts({token, user, posts}) {
-
-    
-
     return (
-        <InfiniteScroll
-            className=""
-            dataLength={posts && posts.length}
-            loader={<h4>Loading ...</h4>}
-        >
-            {posts && posts.slice(0).reverse().map((p) => (
+        <div className='h-full'>
+            {posts ? posts.slice(0).reverse().map((p) => (
                 <Post 
                     user={user}
                     key={p.id}
                     post={p}
                     token={token}
                 />
-            ))}
-        </InfiniteScroll>
+            )) : <div className='h-screen text-center mt-20 text-5xl'>Il n'y rien ici :(</div>}
+        </div>
     )
 }
