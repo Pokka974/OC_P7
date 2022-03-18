@@ -6,13 +6,15 @@ export default function Post({user, post, token}) {
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
     const [likes, setLikes] = useState(0)
-    const [imageToShow, setImageToShow] = useState(null)
-
     const inputRef = useRef(null)
 
-
     useEffect(() => {
-        console.log('POST  :  ' + post.attachment);        let isMounted = true
+        refreshComments()
+        refreshLikes()
+    }, [])
+
+    useEffect(() => {     
+        // let isMounted = true
         api.get(`user/${post.user_id}`, {
             headers: {
                 authorization: `Bearer ${token}`
@@ -20,44 +22,14 @@ export default function Post({user, post, token}) {
         })
             .then(res => {
                 if(res){
-                    if(isMounted) setAuthor(res.data)
+                    // if(isMounted) 
+                    setAuthor(res.data)
                 }
             })
             .catch(err => console.log(err))
-        return () => { isMounted = false }
-    }, [])
-
-    useEffect(() => {
-            refreshComments()
-    }, [])
-
-    useEffect(() => {
-        api.get(`like/${post.id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        .then((res) => {
-            if(res){
-                if(res.data.length){
-                    console.log(res.data);
-                    setLikes(res.data.length)
-                }
-            }
-        })
-        .catch((err) => console.log(err))
-    }, [])
-
-    // INTIALIZE THE IMAGE TO SHOW WITH FILE READER
-    // useEffect(() => {
-    //     const fr = new FileReader()
-    //     if(post.attachment) { fr.readAsDataURL(post.attachment) }
-
-    //     fr.onload = (e) => {
-    //         setImageToShow(e.target.result)
-    //     }
-    // })
-
+        // return () => { isMounted = false }
+    }, [user])
+   
     const sendPost = (e) => {
         e.preventDefault()
         
@@ -78,6 +50,17 @@ export default function Post({user, post, token}) {
         inputRef.current.value = ''
     }
 
+    const refreshLikes = () => {
+        api.get(`likes/${post.id}`, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            setLikes(res.data.length)
+        })
+    }
+
     const refreshComments = () => {
         api.get(`post/comments/${post.id}`, {
             headers: {
@@ -86,7 +69,7 @@ export default function Post({user, post, token}) {
         })
             .then((res) => {
                 setComments(res.data)
-            } )
+            })
             .catch((err) => console.log(err))
     }
 
@@ -95,8 +78,16 @@ export default function Post({user, post, token}) {
         inputRef.current.placeholder = ''
     }
 
+    const isLiked = () => {
+        api.get(`likes/user/${post.id}`,{
+            headers:{
+                authorization: 'Bearer ' + token
+            }
+        })
+        .then(res => console.log('OUI'))
+        .catch(err => like())
+    }
     const like = () => {
-        console.log('like');
         const like = {
             user_id: user.id,
             post_id: post.id,
@@ -104,13 +95,16 @@ export default function Post({user, post, token}) {
             created_ad: new Date(),
             updated_at: new Date()
         }
-        api.post(`like/${post.id}`, like, {
+        api.post(`likes/${post.id}`, like, {
             headers:{
-                autheorization: 'Bearer ' + token
+                authorization: 'Bearer ' + token
             }
         })
-
-        setLikes(likes + 1)
+        .then(res => {
+            refreshLikes()
+            console.log(res)
+        })
+        .catch(err => console.log(err))
     }
 
     return (
@@ -121,10 +115,8 @@ export default function Post({user, post, token}) {
             <div className='p-5 bg-white mt-5 rounded-t-2xl shadow-md'>
                 <div className='flex items-center space-x-2'>
                     <img 
-                        className='rounded-full'
+                        className='rounded-full object-contain h-12 w-12'
                         src={author?.attachment}
-                        width={40}
-                        height={40}
                         alt=''
                     />
 
@@ -144,6 +136,7 @@ export default function Post({user, post, token}) {
             {post.attachment && (
                 <div className='relative h-50 object-cover md:h-70 flex justify-center bg-white'>
                     <img 
+                        
                         src={post.attachment}
                         layout='fill'
                         alt=''
@@ -165,7 +158,7 @@ export default function Post({user, post, token}) {
 
             <div className='flex justify-evenly items-center  bg-white
             text-gray-400 border-t'>
-                <div onClick={like} className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl cursor-pointer hover:font-bold'>
+                <div onClick={isLiked} className='flex items-center space-x-2 p-3 rounded-none rounded-bl-2xl cursor-pointer hover:font-bold'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5" viewBox="0 0 20 20" fill="red">
                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
@@ -198,11 +191,9 @@ export default function Post({user, post, token}) {
 
                 <div className='flex space-x-4 p-4 items-center'>
                     <img 
-                        className='rounded-full'
+                        className='rounded-full object-cover h-12 w-12'
                         src={user.attachment}
                         alt='user profile'
-                        width={40}
-                        height={40}
                         layout='fixed'
                     />
 
@@ -219,7 +210,5 @@ export default function Post({user, post, token}) {
             </div>
             
         </div>
-
-        // render all the comments here
     )
 }

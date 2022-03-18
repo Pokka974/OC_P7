@@ -51,11 +51,9 @@ export default function Inputbox({token, user, update}) {
             <form method='post' encType='multipart/form-data' >
                 <div className='flex space-x-4 px-4 py-2 items-center'>
                     <img 
-                        className='rounded-full'
+                        className='rounded-full object-cover h-12 w-12'
                         src={user.attachment}
                         alt='user profile'
-                        width={40}
-                        height={40}
                         layout='fixed'
                     />
 
@@ -71,7 +69,7 @@ export default function Inputbox({token, user, update}) {
                                 setContentTxt(value)
                             }}
                         />
-                        <button className='pl-2' onClick={sendPost} hidden>Envoyer</button>
+                        <button className='text-sm pl-2' onClick={sendPost}>Envoyer</button>
                     </div>
                         
                     

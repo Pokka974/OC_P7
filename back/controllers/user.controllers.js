@@ -128,16 +128,22 @@ exports.updateUser = async (req, res, next) => {
         // Check if the user who's about to be updated is also the one who's about to update it
         if(userFound.id === req.auth.userId){
             // Test which value is different from the original 
-            for(let i in req.body){
-                //TODO: verify the email regex, password validation, attachment URL
-                //TODO: call password-validator here ??
-                if(i != 'is_admin' && i != 'created_at' && i != 'updated_at'){
-                    userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
-                } else {
-                    return res.status(401).json({ error: 'Unauthorized action '})
-                }
+            // for(let i in req.body){
+            //     //TODO: verify the email regex, password validation, attachment URL
+            //     //TODO: call password-validator here ??
+            //     if(i != 'is_admin' && i != 'created_at' && i != 'updated_at' && i != 'attachment'){
+            //         userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
+            //     } else if(i === 'attachment' && userFound[i] != req.body[i]) {
+            //         userFound[i] = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+            //     } else {
+            //         return res.status(401).json({ error: 'Unauthorized action '})
+            //     }
+            // }
+            // userFound.updated_at = new Date()
+
+            if(req.file){
+                userFound.attachment = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
             }
-            userFound.updated_at = new Date()
             // ave all the changes in DB
             userFound.save()
             return res.status(201).json({ message: 'User updated !' })

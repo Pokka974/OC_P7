@@ -13,6 +13,22 @@ exports.getAllPosts = (req, res, next) => {
         })
 }   
 
+exports.getAllPostsFromUser = (req, res, next) => {
+    Post.findAll({
+        where: {
+            user_id: req.params.id
+        }
+    })
+        .then((posts) => {
+            if(!posts || posts.length === 0){ return res.status(404).json({ error: 'Can\'t find any posts' })}
+            
+            return res.status(200).json(posts)
+        })
+        .catch((error) => {
+            return res.status(500).json( {error: 'unable to access to the posts in DB'} )
+        })
+}
+
 exports.getOnePost = (req, res, next) => {
     const foundPost = Post.findOne(
         { 
@@ -54,7 +70,7 @@ exports.addPost = async (req, res, next) => {
         user_id : parseInt(author),
         post_type : post_type,
         content : req.body.textContent,
-        attachment :  `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        attachment : req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
         created_at : new Date(),
         updated_at : new Date()
     })

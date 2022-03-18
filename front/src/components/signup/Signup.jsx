@@ -6,9 +6,11 @@ import groupomania from '../../assets/icons/icon-above-font.png'
 import api from '../../conf/apiConf'
 import welcomeImg from '../../assets/welcome-image.jpg'
 import icon from '../../assets/icons/icon.png'
+import useAuth from '../../hooks/useAuth';
 
-const Signup = ({authenticate}) => {
+const Signup = () => {
 
+    const { setAuth } = useAuth()
     const navigate = useNavigate()
 
     const submit = (values, actions) => {
@@ -19,16 +21,21 @@ const Signup = ({authenticate}) => {
         }
         api.post('user/signup', newUser)
             .then(res => {
-                console.log(res)
                 actions.setSubmitting(false)
                 actions.resetForm()
 
-                let authUser = {
-                    ...res.data
-                }
+                const id = res.data.userId
+                const token = res.data.token
+                const isAdmin = res.data.isAdmin
 
-                authenticate(authUser)
-                navigate('feed')
+                const authUser = {
+                    id,
+                    isAdmin,
+                    token
+                }
+                localStorage.setItem('user', JSON.stringify(authUser))
+                setAuth({...res.data})
+                navigate('/')
             })
             .catch(err => console.log(err))
     }
@@ -66,7 +73,7 @@ const Signup = ({authenticate}) => {
                     )}
                 </Formik>
                 <h2 className='self-start mt-8 mx-16 h-16 text-xl font-bold'>Déjà inscrit ?</h2>
-                <Link className='w-4/5' to='/login'>
+                <Link className='w-4/5' to='/'>
                     <button className='w-full border bg-white hover:bg-blue-400 hover:text-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='button'>Se Connecter</button>
                 </Link>
             </div>

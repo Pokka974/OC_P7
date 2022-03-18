@@ -6,9 +6,11 @@ import groupomania from '../../assets/icons/icon-above-font.png'
 import api from '../../conf/apiConf'
 import welcomeImg from '../../assets/welcome-image.jpg'
 import icon from '../../assets/icons/icon.png'
+import useAuth from '../../hooks/useAuth';
 
-const Login = ({authenticate}) => {
+const Login = () => {
 
+    const { setAuth } = useAuth()
     const navigate = useNavigate()
 
     const submit = (values, actions) => {
@@ -19,16 +21,21 @@ const Login = ({authenticate}) => {
 
         api.post('user/login', user)
             .then(res => {
-                console.log(res.data)
                 actions.setSubmitting(false)
                 actions.resetForm()
 
-                let authUser = {
-                    ...res.data
+                const id = res.data.userId
+                const token = res.data.token
+                const isAdmin = res.data.isAdmin
+
+                const authUser = {
+                    id,
+                    isAdmin,
+                    token
                 }
-                
-                authenticate(authUser)
-                navigate('feed')
+                localStorage.setItem('user', JSON.stringify(authUser))
+                setAuth({...res.data})
+                navigate('/')
             })
             .catch(err => console.log(err))
     }
