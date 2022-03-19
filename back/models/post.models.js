@@ -12,16 +12,21 @@ module.exports = (sequelize, DataTypes) => {
         associate(models) {
             // define association here
             this.hasMany(models.Like, {
-                onDelete: 'cascade',
-                foreignKey: 'likes'
+                onDelete: 'CASCADE'
             })
-            this.userId = this.belongsTo(models.User, {
+
+            this.hasMany(models.Post, {
+                onDelete: 'CASCADE'
+            })
+
+            this.belongsTo(models.User, {
                 foreignKey: 'user_id',
+                onDelete: 'CASCADE'
             })
                 
-            this.hasMany(this)
-            this.postId = this.belongsTo(this, {
-                foreignKey: 'post_id'
+            this.belongsTo(this, {
+                foreignKey: 'post_id',
+                onDelete: 'CASCADE'
             })
         }
         
@@ -33,7 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             post_type: DataTypes.STRING,
             content: DataTypes.TEXT,
             attachment: DataTypes.STRING,
-            likes: DataTypes.INTEGER,
             createdAt: {
                 type: DataTypes.DATE,
                 field: 'created_at',

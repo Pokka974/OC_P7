@@ -53,7 +53,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model:'user',
+          model: 'user',
           key: 'id'
         }
       },
@@ -76,11 +76,6 @@ module.exports = {
       attachment: {
         allowNull: true,
         type: Sequelize.STRING
-      },
-      likes: {
-        allowNull: false,
-        defaultValue: 0,
-        type: Sequelize.INTEGER
       },
       created_at: {
         allowNull: false,
@@ -107,6 +102,8 @@ module.exports = {
           key: 'id'
         }
       },
+      onUpdate: "cascade",
+      onDelete: "cascade",
       post_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -115,6 +112,8 @@ module.exports = {
           key: 'id'
         }
       },
+      onUpdate: "cascade",
+      onDelete: "cascade",
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

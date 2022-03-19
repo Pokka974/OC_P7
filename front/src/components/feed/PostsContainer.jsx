@@ -28,7 +28,7 @@ const PostsContainer = () => {
               setOriginalPosts(originalPostsArr)
           }
       })
-      .catch(err => console.log(err))
+      .catch(err => console.log('NO POST'))
   }
 
   return (

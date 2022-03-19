@@ -8,17 +8,27 @@ import Inputbox from '../feed/Inputbox'
 export default function ProfilePage() {
 
     const navigate = useNavigate()
+    const { auth } = useAuth()
     const [posts, setPosts] = useState(null)
     const [token] = useState(() => {
         return  JSON.parse(localStorage.getItem('user')).token
     })
     const [ user, setUser ] = useState(null)
     const [image, setImage] = useState(null)
+    const [ hasPermission, setHasPermission ] = useState(false)
+    const [urlParam] = useState(() => {
+        return window.location.href.split('/').pop()
+    })
     const { setAuth } = useAuth()
     const inputRef = useRef()
 
     useEffect(() => {
         refreshUser()
+        setHasPermission(urlParam === auth.id 
+                            ? true 
+                                : auth.isAdmin 
+                                    ? true 
+                                        : false)
     }, [])
 
     useEffect(() => {
@@ -26,10 +36,7 @@ export default function ProfilePage() {
     }, [user])
 
     const refreshUser = () => {
-        const url = window.location.href.split('/')
-        const userId = url.pop()
-
-        api.get(`user/${userId}`, {
+        api.get(`user/${urlParam}`, {
             headers: {
                 authorization: 'Bearer ' + token
             }
@@ -42,7 +49,7 @@ export default function ProfilePage() {
         .catch(err => console.log(err))
     }
     const refreshPosts = () => {
-        api.get(`post/all/${user?.id}`, {
+        api.get(`post/all/${urlParam}`, {
             headers:{
                 authorization: 'Bearer ' + token
             }
@@ -51,7 +58,7 @@ export default function ProfilePage() {
             console.log(res.data);
             setPosts(res.data)
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log('NO POST'))
     }
 
     const updatePP = (file) => {
@@ -94,15 +101,17 @@ export default function ProfilePage() {
                             alt='user profile pic' 
                             className='rounded-full border-4 border-white h-48 w-48 object-cover'    
                         />
-                        <div onClick={() => inputRef.current.click()} className='visible lg:invisible hover:bg-gray-300 absolute -bottom-3 right-4 flex items-center p-2 space-x-2 h-11 bg-gray-200 border-4 rounded-lg border-white group-hover:visible'>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                            </svg>
-                            <p className='text-md font-bold'>Mettre à jour</p>
-                            <form method='post' encType='multipart/form-data'>
-                                <input hidden type='file' ref={inputRef} name='image' onChange={(e) => updatePP(e.target.files[0])}/>
-                            </form>
-                        </div>
+                        { hasPermission && (
+                            <div onClick={() => inputRef.current.click()} className='visible lg:invisible hover:bg-gray-300 absolute -bottom-3 right-4 flex items-center p-2 space-x-2 h-11 bg-gray-200 border-4 rounded-lg border-white group-hover:visible'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                                </svg>
+                                <p className='text-md font-bold'>Mettre à jour</p>
+                                <form method='post' encType='multipart/form-data'>
+                                    <input hidden type='file' ref={inputRef} name='image' onChange={(e) => updatePP(e.target.files[0])}/>
+                                </form>
+                            </div>
+                        )}
                     </div>
                 </div>
                 

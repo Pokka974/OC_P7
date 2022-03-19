@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../../conf/apiConf'
+import useAuth from '../../hooks/useAuth'
 
 export default function Comment({comment, token, user}) {
-    
+
+    const { auth } = useAuth()
     const [author, setAuthor] = useState()
     const [commentInside, setCommentInside] = useState()
     const [toggleComment, setToggleComment] = useState(false)
@@ -15,7 +18,6 @@ export default function Comment({comment, token, user}) {
     }, [])
 
     useEffect(() => {
-        let isMounted = true
         api.get(`user/${comment.user_id}`, {
             headers: {
                 authorization: `Bearer ${token}`
@@ -23,12 +25,11 @@ export default function Comment({comment, token, user}) {
         })
             .then(res => {
                 if(res){
-                    if(isMounted) setAuthor(res.data)
+                    setAuthor(res.data)
                 }
             })
             .catch(err => console.log(err))
-        return () => { isMounted = false }
-    }, [])
+    }, [user])
 
     const sendPost = (e) => {
         e.preventDefault()
@@ -72,7 +73,7 @@ export default function Comment({comment, token, user}) {
             .then((res) => {
                 setCommentInside(res.data)
             } )
-            .catch((err) => console.log(err))
+            .catch((err) => console.log('NO COMMENTS'))
     }   
 
     const toggleInput = (e) => {
@@ -108,31 +109,44 @@ export default function Comment({comment, token, user}) {
     }
 
     return (
-        <div className='flex pt-4 px-2 items-center'>
-            <img 
-                className='rounded-full self-start object-cover h-12 w-12'
-                src={author?.attachment}
-                alt=''
-            />
-            <div className='flex-col overflow-auto w-full'>
-                <div className='flex-col ml-4 rounded-xl bg-gray-200 break-words inline-block'>
-                    <p className='font-bold px-3 py-1'>{author?.username}</p>
-                    <p className='text-s text-gray-4000 px-3 pb-1'>{comment?.content}</p>
-                    
-                    
-                </div>
-                <div className='flex gap-3 pl-5 pt-2'>
-                    {likes > 0 && 
-                        <div className='flex space-x-1'>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="red">
-                                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+        <div className='flex pt-4 px-4 items-center '>
+            <Link className='self-start h-14 w-14' to={`profile/${author?.id}`}>
+                <img 
+                    className='rounded-full  object-cover'
+                    src={author?.attachment}
+                    alt='comment author profile pic'
+                />
+            </Link>
+            
+            <div className='flex-col overflow-auto w-full '>
+                <div className='group flex justify-between'>
+                    <div className='flex-col'>
+                        <div className='ml-4 rounded-xl bg-gray-200 break-words inline-block'>
+                            <p className='font-bold px-3 py-1'>{author?.username}</p>
+                            <p className='text-s text-gray-4000 px-3 pb-1'>{comment?.content}</p>
+                        </div>
+                        <div className='flex gap-3 pl-5 pt-2'>
+                            {likes > 0 && 
+                                <div className='flex space-x-1'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="red">
+                                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                    </svg>
+                                    <p>{likes}</p>
+                                </div>
+                            }
+                            <p onClick={isLiked} className='font-bold text-s cursor-pointer hover:underline'>J'aime</p>
+                            <p onClick={toggleInput} className='font-bold text-s cursor-pointer hover:underline'>Répondre</p>
+                        </div>
+                    </div>
+                    { (auth.id === author?.id || auth.isAdmin) &&
+                        <div className='self-start invisible group-hover:visible cursor-pointer'>
+                            <svg  xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
-                            <p>{likes}</p>
                         </div>
                     }
-                    <p onClick={isLiked} className='font-bold text-s cursor-pointer hover:underline'>J'aime</p>
-                    <p onClick={toggleInput} className='font-bold text-s cursor-pointer hover:underline'>Répondre</p>
                 </div>
+                
                 
                 {/* Comment the comment input */}
 

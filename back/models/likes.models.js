@@ -6,24 +6,27 @@ module.exports = (sequelize, DataTypes) => {
 
         associate(models) {
 
-            models.User.belongsToMany(models.Post, {
-                through: this,
-                foreignKey: 'user_id',
-                otherKey: 'post_id'
-            })
+            // models.User.belongsToMany(models.Post, {
+            //     through: this,
+            //     foreignKey: 'user_id',
+            //     otherKey: 'post_id'
+            // })
 
-            models.Post.belongsToMany(models.User, {
-                through: this,
-                foreignKey: 'post_id',
-                otherKey: 'user_id'
-            })
+            // models.Post.belongsToMany(models.User, {
+            //     through: this,
+            //     foreignKey: 'post_id',
+            //     otherKey: 'user_id'
+            // })
             
-            // define association here
-            this.userId = this.belongsTo(models.User, {
-                foreignKey: 'user_id'
+            // // define association here
+            this.belongsTo(models.User, {
+                foreignKey: 'user_id',
+                onDelete: 'CASCADE'
             });
-            this.postId = this.belongsTo(models.Post, {
-                foreignKey: 'post_id'
+            this.belongsTo(models.Post, {
+                onDelete: 'CASCADE',
+                foreignKey: 'post_id',
+                constraints: false
             });
         }
     }

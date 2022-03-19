@@ -45,6 +45,26 @@ exports.like = (req, res , next) => {
 
 // }
 
-exports.deleteLike = (req, res , next) => {
-
+exports.deleteLike = async (req, res , next) => {
+    console.log('DELETE LIKE CONTRLR');
+    const likeToDelete = await Likes.findOne({
+        where: { id: req.params.id }
+    })
+    
+    if(likeToDelete){
+        console.log('like : ', likeToDelete);
+        if(likeToDelete.user_id === req.auth.userId){
+            const deletedLike = await Likes.destroy({
+                where: { id: likeToDelete.id }
+            })
+    
+            if(deletedLike)  return res.status(204).json({ message: `${deletedLike} Like successfully deleted` })
+            else return res.status(404).json({ error : 'Like not found' })
+        } else {
+            return res.status(401).json({ error: 'unauthorized action ' })
+        }
+        
+    } else {
+        return res.status(40).json({error: 'like not found'})
+    }   
 }

@@ -1,5 +1,6 @@
 const { post } = require('../routes/user.routes')
 const Post = require('../models').post
+const Likes = require('../models').likes
 
 exports.getAllPosts = (req, res, next) => {
     Post.findAll()
@@ -161,7 +162,22 @@ exports.deletePost = async (req, res, next) => {
         // Check if the user is also the author of the post which's about to be updated
         // Or if the user is an admin
         if(concernedPost.user_id === req.auth.userId || req.auth.isAdmin){
+            
+            // FIRST Delete the child's post and likes
+            const childPosts = await Post.findAll({
+                where: { post_id: req.params.id }
+            })
+            if(childPosts){
+                childPosts.map(p => Post.destroy({ where: {id: p.id} }))
+            }
 
+            const childLikes = await Likes.findAll({
+                where: { post_id: req.params.id }
+            })
+            if(childLikes){
+                childLikes.map(l => Likes.destroy({where: { id: l.id }}))
+            }
+            
             const count = await Post.destroy({
                 where: { id: concernedPost.id }
             })

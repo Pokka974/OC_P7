@@ -7,10 +7,10 @@ module.exports = (sequelize, DataTypes) => {
     associate(models) {
       // define association here
       this.hasMany(models.Post, {
-        onDelete: 'cascade'
+        onDelete: 'CASCADE'
       })
       this.hasMany(models.Like, {
-        onDelete: 'cascade'
+        onDelete: 'CASCADE'
       })
     }
   }

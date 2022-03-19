@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Header, PostsContainer } from '../../components'
 import useAuth from '../../hooks/useAuth'
 

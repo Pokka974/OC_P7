@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../../conf/apiConf'
+import useAuth from '../../hooks/useAuth'
 import Comment from './Comment'
 export default function Post({user, post, token}) {
     
+    const { auth } = useAuth()
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
     const [likes, setLikes] = useState(0)
@@ -14,7 +17,6 @@ export default function Post({user, post, token}) {
     }, [])
 
     useEffect(() => {     
-        // let isMounted = true
         api.get(`user/${post.user_id}`, {
             headers: {
                 authorization: `Bearer ${token}`
@@ -22,12 +24,10 @@ export default function Post({user, post, token}) {
         })
             .then(res => {
                 if(res){
-                    // if(isMounted) 
                     setAuthor(res.data)
                 }
             })
             .catch(err => console.log(err))
-        // return () => { isMounted = false }
     }, [user])
    
     const sendPost = (e) => {
@@ -70,7 +70,7 @@ export default function Post({user, post, token}) {
             .then((res) => {
                 setComments(res.data)
             })
-            .catch((err) => console.log(err))
+            .catch((err) => console.log('NO COMMENTS'))
     }
 
     const focusOnComment = () => {
@@ -84,9 +84,23 @@ export default function Post({user, post, token}) {
                 authorization: 'Bearer ' + token
             }
         })
-        .then(res => console.log('OUI'))
+        .then(res => unlike(res.data.id))
         .catch(err => like())
     }
+
+    const unlike = (likeId) => {
+        api.delete(`likes/${likeId}`, {
+            headers: {
+                authorization: 'Bearer ' + token
+            }
+        })
+        .then(res => {
+            refreshLikes()
+            console.log(res);
+        })
+        .catch(err => console.log(err))
+    }
+
     const like = () => {
         const like = {
             user_id: user.id,
@@ -113,21 +127,27 @@ export default function Post({user, post, token}) {
             {/* POST CONTENT + USER INFO */}
 
             <div className='p-5 bg-white mt-5 rounded-t-2xl shadow-md'>
-                <div className='flex items-center space-x-2'>
-                    <img 
-                        className='rounded-full object-contain h-12 w-12'
-                        src={author?.attachment}
-                        alt=''
-                    />
+                <div className='flex justify-between'>
+                    <Link to={`profile/${author?.id}`} className='flex items-center space-x-2 cursor-pointer group'>
+                        <img 
+                            className='rounded-full object-contain h-12 w-12'
+                            src={author?.attachment}
+                            alt=''
+                        />
 
-                    <div>
-                        <p className='font-bold'>{author?.username}</p>
-                        <p className='text-xs text-gray-4000'>
-                            {new Date(post.createdAt)?.toLocaleString()}
-                        </p>
-                    </div>
+                        <div className='group-hover:underline'>
+                            <p className='font-bold'>{author?.username}</p>
+                            <p className='text-xs text-gray-4000'>
+                                {new Date(post.createdAt)?.toLocaleString()}
+                            </p>
+                        </div>
+                    </Link>
+                    { (auth.id === author?.id || auth.isAdmin) &&
+                        <svg className='cursor-pointer h-5 w-5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                    }
                 </div>
-
                 <p className='pt-4'>{post.content}</p>
             </div>
 
