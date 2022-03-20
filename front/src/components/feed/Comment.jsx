@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../conf/apiConf'
 import useAuth from '../../hooks/useAuth'
+import ToggleMenu from '../helpers/ToggleMenu'
 
-export default function Comment({comment, token, user}) {
+export default function Comment({comment, token, user, update, updateComment}) {
 
     const { auth } = useAuth()
     const [author, setAuthor] = useState()
     const [commentInside, setCommentInside] = useState()
     const [toggleComment, setToggleComment] = useState(false)
+    const [toggleMenu, setToggleMenu] = useState(false)
     const [likes, setLikes] = useState(0)
     const inputRef = useRef(null)
 
@@ -18,7 +20,7 @@ export default function Comment({comment, token, user}) {
     }, [])
 
     useEffect(() => {
-        api.get(`user/${comment.user_id}`, {
+        api.get(`user/${comment.userId}`, {
             headers: {
                 authorization: `Bearer ${token}`
             }
@@ -91,8 +93,8 @@ export default function Comment({comment, token, user}) {
     }
     const like = () => {
         const like = {
-            user_id: user.id,
-            post_id: comment.id,
+            userId: user.id,
+            postId: comment.id,
             post_type: comment.post_type,
             created_ad: new Date(),
             updated_at: new Date()
@@ -108,11 +110,15 @@ export default function Comment({comment, token, user}) {
         .catch(err => console.log(err))
     }
 
+    const handleToggleMenu = () => {
+        setToggleMenu(!toggleMenu)
+    }
+
     return (
-        <div className='flex pt-4 px-4 items-center '>
+        <div className='flex pt-4 px-4 items-center'>
             <Link className='self-start h-14 w-14' to={`profile/${author?.id}`}>
                 <img 
-                    className='rounded-full  object-cover'
+                    className='rounded-full object-cover h-12 w-12'
                     src={author?.attachment}
                     alt='comment author profile pic'
                 />
@@ -138,11 +144,19 @@ export default function Comment({comment, token, user}) {
                             <p onClick={toggleInput} className='font-bold text-s cursor-pointer hover:underline'>Répondre</p>
                         </div>
                     </div>
-                    { (auth.id === author?.id || auth.isAdmin) &&
-                        <div className='self-start invisible group-hover:visible cursor-pointer'>
-                            <svg  xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+
+                        {/* Click here to open modal underneath */}   
+
+                    {(auth.id === author?.id || auth.is_admin) &&
+                        <div onClick={handleToggleMenu} className='relative self-start  cursor-pointer'>
+                            <svg   xmlns="http://www.w3.org/2000/svg" className="invisible group-hover:visible hover:bg-gray-100 rounded-full w-8 h-8 p-1.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
+                            {/* Invisible modal for Delete and update post */}
+
+                            {toggleMenu && 
+                                (<ToggleMenu id={comment.id} update={() => update()} updateComment={() => updateComment()} />)
+                            }  
                         </div>
                     }
                 </div>
@@ -179,6 +193,7 @@ export default function Comment({comment, token, user}) {
                         comment={c}
                         token={token}
                         user={user}
+                        update={() => update()}
                     />  
                 ))}
             </div>

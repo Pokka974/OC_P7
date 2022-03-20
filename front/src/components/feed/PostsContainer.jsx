@@ -5,17 +5,18 @@ import useAuth from '../../hooks/useAuth'
 
 const PostsContainer = () => {
   
-  const { auth } = useAuth()
-  const [user] = useState(() => {
-    return JSON.parse(localStorage.getItem('user'))
-  })
-  const [originalPosts, setOriginalPosts] = useState(null)
+    const { auth } = useAuth()
+    const [user] = useState(() => {
+      return JSON.parse(localStorage.getItem('user'))
+    })
+    const [originalPosts, setOriginalPosts] = useState(null)
 
     useEffect(() => {
         refreshPosts()
     }, [])
-  
+
   const refreshPosts = () => {
+    console.log('REFRESH POSTS');
     let originalPostsArr = new Array()
     api.get('post/',{
       headers: {
@@ -24,7 +25,7 @@ const PostsContainer = () => {
       })
       .then(res => {
           if(res){
-              res.data.map((p) => !p.post_id && originalPostsArr.push(p) )
+              res.data.map((p) => !p.postId && originalPostsArr.push(p) )
               setOriginalPosts(originalPostsArr)
           }
       })
@@ -32,10 +33,10 @@ const PostsContainer = () => {
   }
 
   return (
-    <div className='bg-gray-100 grow pt-20 h-full'>
+    <div className='bg-gray-100 grow pt-20 min-h-screen h-full'>
       <div className='mx-auto max-w-sm md:max-w-md lg:max-w-xl xl:max-w-2xl transition-all'>
         {auth && <Inputbox token={user.token} user={auth} update={() => refreshPosts()} /> }
-        {auth && <AllPosts token={user.token} user={auth} posts={originalPosts} /> }
+        {auth && <AllPosts token={user.token} user={auth} posts={originalPosts} update={() => refreshPosts()} /> }
       </div>
     </div>
   )

@@ -1,6 +1,8 @@
 const { post } = require('../routes/user.routes')
-const Post = require('../models').post
+const Post = require('../models').posts
 const Likes = require('../models').likes
+
+const fs = require('fs');
 
 exports.getAllPosts = (req, res, next) => {
     Post.findAll()
@@ -17,7 +19,7 @@ exports.getAllPosts = (req, res, next) => {
 exports.getAllPostsFromUser = (req, res, next) => {
     Post.findAll({
         where: {
-            user_id: req.params.id
+            userId: req.params.id
         }
     })
         .then((posts) => {
@@ -46,7 +48,7 @@ exports.getOnePost = (req, res, next) => {
 exports.getComments =  (req, res, next) => {
 
     Post.findAll({
-        where: { post_id: req.params.id }
+        where: { postId: req.params.id }
     })
     .then((posts) => {
         if(!posts || posts.length === 0){ return res.status(404).json({ error: 'Can\'t find any posts' })}
@@ -68,7 +70,7 @@ exports.addPost = async (req, res, next) => {
 
     // Create the post
     const newPost = await Post.create({
-        user_id : parseInt(author),
+        userId : author,
         post_type : post_type,
         content : req.body.textContent,
         attachment : req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
@@ -101,8 +103,8 @@ exports.addResponse = async (req, res, next) => {
 
     // Create the post
     const newPost = await Post.create({
-        user_id : parseInt(author),
-        post_id : postReference,
+        userId : parseInt(author),
+        postId : postReference,
         post_type : post_type,
         content : content,
         attachment : attachment,
@@ -127,7 +129,7 @@ exports.updatePost = async (req, res, next) => {
 
         // Check if the user is also the author of the post which's about to be updated
         // Or if the user is an admin
-        if(concernedPost.user_id === req.auth.userId || req.auth.isAdmin){
+        if(concernedPost.userId === req.auth.userId || req.auth.isAdmin){
 
             for(let i in req.body){
                 if(i === 'content' || i === 'attachment'){
@@ -161,29 +163,24 @@ exports.deletePost = async (req, res, next) => {
 
         // Check if the user is also the author of the post which's about to be updated
         // Or if the user is an admin
-        if(concernedPost.user_id === req.auth.userId || req.auth.isAdmin){
-            
-            // FIRST Delete the child's post and likes
-            const childPosts = await Post.findAll({
-                where: { post_id: req.params.id }
-            })
-            if(childPosts){
-                childPosts.map(p => Post.destroy({ where: {id: p.id} }))
+        if(concernedPost.userId === req.auth.userId || req.auth.isAdmin){
+            //Delete the image related to the post
+            if(concernedPost.attachment){
+                const filename = concernedPost.attachment.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    Post.destroy({
+                        where: { id: concernedPost.id }
+                    })
+                    .then(() => res.status(200).json({ message: 'Object deleted !'}))
+                    .catch(error => res.status(400).json({ error }));
+                });
+            } else {
+                Post.destroy({
+                    where: { id: concernedPost.id }
+                })
+                .then(() => res.status(200).json({ message: 'Object deleted !'}))
+                .catch(error => res.status(400).json({ error }));
             }
-
-            const childLikes = await Likes.findAll({
-                where: { post_id: req.params.id }
-            })
-            if(childLikes){
-                childLikes.map(l => Likes.destroy({where: { id: l.id }}))
-            }
-            
-            const count = await Post.destroy({
-                where: { id: concernedPost.id }
-            })
-
-            if(count) return res.status(204).json({ message: `${count} Post successfully deleted` })
-            else return res.status(404).json({ error : 'post not found' })
         } else {
             return res.status(401).json({ error: 'unauthorized action ' })
         }

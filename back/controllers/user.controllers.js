@@ -1,6 +1,7 @@
-const User = require('../models').user
+const User = require('../models').users
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const fs = require('fs');
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -98,6 +99,7 @@ exports.login = async (req, res, next) => {
         where: { email: email }
     })
     if(userFound){
+        console.log(userFound);
         bcrypt.compare(password, userFound.password)
             .then(valid => {
                 if(!valid){
@@ -126,27 +128,17 @@ exports.updateUser = async (req, res, next) => {
     })
     if(userFound) {
         // Check if the user who's about to be updated is also the one who's about to update it
-        if(userFound.id === req.auth.userId){
-            // Test which value is different from the original 
-            // for(let i in req.body){
-            //     //TODO: verify the email regex, password validation, attachment URL
-            //     //TODO: call password-validator here ??
-            //     if(i != 'is_admin' && i != 'created_at' && i != 'updated_at' && i != 'attachment'){
-            //         userFound[i] = userFound[i] === req.body[i] ? userFound[i] : req.body[i]
-            //     } else if(i === 'attachment' && userFound[i] != req.body[i]) {
-            //         userFound[i] = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-            //     } else {
-            //         return res.status(401).json({ error: 'Unauthorized action '})
-            //     }
-            // }
-            // userFound.updated_at = new Date()
-
-            if(req.file){
-                userFound.attachment = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-            }
-            // ave all the changes in DB
-            userFound.save()
-            return res.status(201).json({ message: 'User updated !' })
+        if(userFound.id === req.auth.userId || req.auth.isAdmin){
+            
+            const filename = userFound.attachment.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {
+                if(req.file){
+                    userFound.attachment = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                }
+                // save all the changes in DB
+                userFound.save()
+                return res.status(201).json({ message: 'User updated !' })
+            })
         } else {
             return res.status(401).json({ error: 'Unauthorized action'})
         }
@@ -163,15 +155,19 @@ exports.deleteUser = async (req, res, next) => {
     })
 
     if(userFound){
-        if(userFound.id === req.auth.userId){
+        console.log('isAdmin: ', req.auth.isAdmin);
+        console.log('userId: ', req.auth.userId);
+        console.log('userFound.id: ', userFound.id);
+        if(userFound.id === req.auth.userId || req.auth.isAdmin){
 
-            const count = await User.destroy({
-                where: { id: userFound.id }
+            const filename = userFound.attachment.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {
+                User.destroy({
+                    where: { id: userFound.id }
+                })
+                .then(count =>  res.status(204).json({ message: `${count} User successfully deleted` }))
+                .catch(err =>  res.status(404).json({error: err}))
             })
-            
-            if(count) return res.status(204).json({ message: `${count} User successfully deleted` })
-            else return res.status(404)
-            
         } else {
             return res.status(401).json({ error: 'Unauthorized action' })
         }

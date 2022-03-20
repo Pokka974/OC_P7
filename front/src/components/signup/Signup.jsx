@@ -23,7 +23,6 @@ const Signup = () => {
             .then(res => {
                 actions.setSubmitting(false)
                 actions.resetForm()
-
                 const id = res.data.userId
                 const token = res.data.token
                 const isAdmin = res.data.isAdmin
@@ -41,7 +40,7 @@ const Signup = () => {
     }
 
     const userSchema = () => Yup.object().shape({
-        name: Yup.string('String').min(4, 'Trop court').max(20, 'Trop long').required('Champ requis'),
+        name: Yup.string('String').min(4, 'Trop court').max(35, 'Trop long').required('Champ requis'),
         email: Yup.string().email("L'email doit être valide").required('Champ requis'),
         password: Yup.string().min(5, 'Trop court').required('Champ requis')
       });

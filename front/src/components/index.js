@@ -1,7 +1,7 @@
 export { default  as Layout } from './helpers/Layout'
 export { default as Missing } from './helpers/Missing'
 export { default as RequiredAuth } from './helpers/RequiredAuth'
-
+export { default as ToggleMenu } from './helpers/ToggleMenu'
 export { default as Signup } from './signup/Signup'
 export { default as Login } from './login/Login'
 

@@ -2,13 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../conf/apiConf'
 import useAuth from '../../hooks/useAuth'
+import ToggleMenu from '../helpers/ToggleMenu'
 import Comment from './Comment'
-export default function Post({user, post, token}) {
+export default function Post({user, post, token, update}) {
     
     const { auth } = useAuth()
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
     const [likes, setLikes] = useState(0)
+    
+    const [toggleMenu, setToggleMenu] = useState(false)
     const inputRef = useRef(null)
 
     useEffect(() => {
@@ -17,7 +20,7 @@ export default function Post({user, post, token}) {
     }, [])
 
     useEffect(() => {     
-        api.get(`user/${post.user_id}`, {
+        api.get(`user/${post.userId}`, {
             headers: {
                 authorization: `Bearer ${token}`
             }
@@ -62,6 +65,7 @@ export default function Post({user, post, token}) {
     }
 
     const refreshComments = () => {
+        console.log('REFRESH COMMENT');
         api.get(`post/comments/${post.id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -103,8 +107,8 @@ export default function Post({user, post, token}) {
 
     const like = () => {
         const like = {
-            user_id: user.id,
-            post_id: post.id,
+            userId: user.id,
+            postId: post.id,
             post_type: post.post_type,
             created_ad: new Date(),
             updated_at: new Date()
@@ -121,8 +125,12 @@ export default function Post({user, post, token}) {
         .catch(err => console.log(err))
     }
 
+    const handleToggleMenu = () => {
+        setToggleMenu(!toggleMenu)
+    }
+
     return (
-        <div className='flex flex-col'>
+        <div  className='flex flex-col'>
 
             {/* POST CONTENT + USER INFO */}
 
@@ -130,9 +138,9 @@ export default function Post({user, post, token}) {
                 <div className='flex justify-between'>
                     <Link to={`profile/${author?.id}`} className='flex items-center space-x-2 cursor-pointer group'>
                         <img 
-                            className='rounded-full object-contain h-12 w-12'
+                            className='rounded-full object-cover h-12 w-12'
                             src={author?.attachment}
-                            alt=''
+                            alt='user profile pic'
                         />
 
                         <div className='group-hover:underline'>
@@ -142,11 +150,23 @@ export default function Post({user, post, token}) {
                             </p>
                         </div>
                     </Link>
-                    { (auth.id === author?.id || auth.isAdmin) &&
-                        <svg className='cursor-pointer h-5 w-5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                        </svg>
-                    }
+                    <div className='relative'>
+                        {/* Click here to open modal underneath */}
+                        
+                        { (auth.id === author?.id || auth.is_admin) &&    
+                            <svg onClick={handleToggleMenu} className='cursor-pointer hover:bg-gray-100 rounded-full w-8 h-8 p-1.5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                            </svg>
+                        }
+                        
+                        {/* Invisible modal for Delete and update post */}
+
+                        {toggleMenu && 
+                            (<ToggleMenu id={post.id} update={() => update()} updateComment={() => refreshComments()}/>)
+                        }   
+
+                    </div>
+                    
                 </div>
                 <p className='pt-4'>{post.content}</p>
             </div>
@@ -204,6 +224,8 @@ export default function Post({user, post, token}) {
                         comment={c}
                         token={token}
                         user={user}
+                        update={() => update()}
+                        updateComment={() => refreshComments()}
                     />)
                 )}
 
