@@ -88,9 +88,23 @@ export default function Comment({comment, token, user, update, updateComment}) {
                 authorization: 'Bearer ' + token
             }
         })
-        .then(res => console.log('Déjà liké'))
+        .then(res => unlike(res.data.id))
         .catch(err => like())
     }
+
+    const unlike = (likeId) => {
+        api.delete(`likes/${likeId}`, {
+            headers: {
+                authorization: 'Bearer ' + token
+            }
+        })
+        .then(res => {
+            refreshLikes()
+            console.log(res);
+        })
+        .catch(err => console.log(err))
+    }
+
     const like = () => {
         const like = {
             userId: user.id,
@@ -124,13 +138,16 @@ export default function Comment({comment, token, user, update, updateComment}) {
                 />
             </Link>
             
-            <div className='flex-col overflow-auto w-full '>
+            <div className='flex-col overflow-visible w-full '>
                 <div className='group flex justify-between'>
                     <div className='flex-col'>
                         <div className='ml-4 rounded-xl bg-gray-200 break-words inline-block'>
                             <p className='font-bold px-3 py-1'>{author?.username}</p>
                             <p className='text-s text-gray-4000 px-3 pb-1'>{comment?.content}</p>
                         </div>
+                        <p className='ml-5 mt-1 text-xs text-gray-4000'>
+                            {new Date(comment.createdAt)?.toLocaleString()}
+                        </p>
                         <div className='flex gap-3 pl-5 pt-2'>
                             {likes > 0 && 
                                 <div className='flex space-x-1'>
@@ -148,15 +165,14 @@ export default function Comment({comment, token, user, update, updateComment}) {
                         {/* Click here to open modal underneath */}   
 
                     {(auth.id === author?.id || auth.is_admin) &&
-                        <div onClick={handleToggleMenu} className='relative self-start  cursor-pointer'>
+                        <div onClick={handleToggleMenu} className='relative self-start cursor-pointer overflow-visible '>
                             <svg   xmlns="http://www.w3.org/2000/svg" className="invisible group-hover:visible hover:bg-gray-100 rounded-full w-8 h-8 p-1.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
                             {/* Invisible modal for Delete and update post */}
-
                             {toggleMenu && 
                                 (<ToggleMenu id={comment.id} update={() => update()} updateComment={() => updateComment()} />)
-                            }  
+                            }
                         </div>
                     }
                 </div>
@@ -173,14 +189,15 @@ export default function Comment({comment, token, user, update, updateComment}) {
                             layout='fixed'
                         />
 
-                        <form className='flex flex-1 w-full'>
+                        <form className='flex flex-1 w-full items-center space-x-2'>
                             <input 
                                 className='break-word rounded-full h-12 bg-gray-100 grow px-5 focus:outline-none'
                                 type='text'
                                 ref={inputRef} 
                                 placeholder={`Un commentaire ${user.username}?`}
                             />
-                            <button className='pl-2' onClick={sendPost}>Envoyer</button>
+                            
+                            <button className='text-sm' onClick={sendPost}>Envoyer</button>
                         </form>
                     </div>
                 }

@@ -33,11 +33,12 @@ const PostsContainer = () => {
   }
 
   return (
-    <div className='bg-gray-100 grow pt-20 min-h-screen h-full'>
-      <div className='mx-auto max-w-sm md:max-w-md lg:max-w-xl xl:max-w-2xl transition-all'>
+    <div className='bg-gray-100 grow pt-20 min-w-full h-full'>
+      <div className='mx-auto max-w-sm md:max-w-lg lg:max-w-2xl xl:max-w-2xl transition-all'>
         {auth && <Inputbox token={user.token} user={auth} update={() => refreshPosts()} /> }
         {auth && <AllPosts token={user.token} user={auth} posts={originalPosts} update={() => refreshPosts()} /> }
       </div>
+      <div className='h-20 bg-gray-100'></div>
     </div>
   )
 }

@@ -53,14 +53,17 @@ export default function ProfilePage() {
         .catch(err => console.log(err))
     }
     const refreshPosts = () => {
-        api.get(`post/all/${urlParam}`, {
-            headers:{
-                authorization: 'Bearer ' + token
-            }
+        let originalPostsArr = new Array()
+        api.get(`post/all/${urlParam}`,{
+        headers: {
+            authorization: `Bearer ${token}`
+        }
         })
         .then(res => {
-            console.log(res.data);
-            setPosts(res.data)
+            if(res){
+                res.data.map((p) => !p.postId && originalPostsArr.push(p) )
+                setPosts(originalPostsArr)
+            }
         })
         .catch(err => console.log('NO POST'))
     }
@@ -105,7 +108,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className='min-h-screen h-full flex-col'>
+        <div className='min-h-screen h-full flex-col w-screen min-w-screen'>
             <div className='flex justify-center relative h-64 bg-gray-600'>
                 <div className='group absolute -bottom-6 cursor-pointer'>
                     <div className='relative'>
@@ -115,7 +118,7 @@ export default function ProfilePage() {
                             className='rounded-full border-4 border-white h-48 w-48 object-cover'    
                         />
                         { hasPermission && (
-                            <div onClick={() => inputRef.current.click()} className='visible lg:invisible hover:bg-gray-300 absolute -bottom-3 right-4 flex items-center p-2 space-x-2 h-11 bg-gray-200 border-4 rounded-lg border-white group-hover:visible'>
+                            <div onClick={() => inputRef.current.click()} className='flex lg:hidden hover:bg-gray-300 absolute -bottom-3 right-4 items-center p-2 space-x-2 h-11 bg-gray-200 border-4 rounded-lg border-white group-hover:flex'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                                 </svg>
@@ -132,7 +135,7 @@ export default function ProfilePage() {
             <p className='mt-10 mb-6 text-xl font-bold text-center'>{user?.username}</p>
            
             <div className='bg-gray-100 pt-2 h-full'>
-                <div className='mx-auto max-w-sm md:max-w-md lg:max-w-xl xl:max-w-2xl transition-all min-h-screen h-full'>
+                <div className='mx-auto max-w-sm md:max-w-lg lg:max-w-2xl xl:max-w-2xl transition-all min-h-screen h-full'>
                     {user && <Inputbox token={token} user={user} update={() => refreshPosts()} /> }
                     {user && <AllPosts
                                 token={token}
@@ -188,6 +191,7 @@ export default function ProfilePage() {
                     </Fab>
                 }
             </div>
+            <div className='h-20 bg-gray-100'></div>
         </div>
     )
 }

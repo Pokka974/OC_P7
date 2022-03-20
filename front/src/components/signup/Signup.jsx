@@ -48,7 +48,7 @@ const Signup = () => {
     return (
         <div className='flex flex-col-reverse md:flex-row'>
             <div className='w-full relative md:w-3/5'>
-                <img className='object-cover h-screen w-full blur-sm' alt='presentation' src={welcomeImg}/>
+                <img className='object-cover h-screen w-full' alt='presentation' src={welcomeImg}/>
                 <img className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' src={icon} alt='logo' />
             </div>
             <div className='flex flex-col w-full bg-light items-center py-8 md:w-2/5 h-screen'>
@@ -72,7 +72,7 @@ const Signup = () => {
                     )}
                 </Formik>
                 <h2 className='self-start mt-8 mx-16 h-16 text-xl font-bold'>Déjà inscrit ?</h2>
-                <Link className='w-4/5' to='/'>
+                <Link className='w-4/5' to='/login'>
                     <button className='w-full border bg-white hover:bg-blue-400 hover:text-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='button'>Se Connecter</button>
                 </Link>
             </div>

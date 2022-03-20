@@ -10,15 +10,15 @@ export default function Navbar() {
   return (
     <>
       { linkToProfile && 
-        <Link to={linkToProfile} className='flex items-center space-x-3 cursor-pointer'>
+        <Link to={linkToProfile} className='flex items-center space-x-3 cursor-pointer pr-2'>
           {auth && 
             <img 
-                className='rounded-full object-cover h-12 w-12'
-                src={auth.attachment}
+                className=' rounded-full object-cover h-12 w-12'
+                src={auth?.attachment}
                 alt=''
             />
           }
-          {auth && <p className='font-bold'>{auth.username}</p>}
+          {auth && <p className='hidden md:block font-bold'>{auth.username}</p>}
         </Link>
         
       }

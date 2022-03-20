@@ -127,9 +127,11 @@ exports.updateUser = async (req, res, next) => {
         where: { id: req.params.id }
     })
     if(userFound) {
-        // Check if the user who's about to be updated is also the one who's about to update it
+        // Check if the user who's about to be updated is also the one who's actually updating it
+        //  Or if the user is an admin
         if(userFound.id === req.auth.userId || req.auth.isAdmin){
             
+            //Delete the previous file
             const filename = userFound.attachment.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 if(req.file){

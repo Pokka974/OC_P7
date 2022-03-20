@@ -139,8 +139,6 @@ exports.updatePost = async (req, res, next) => {
                 }
             }
 
-            concernedPost.updated_at = new Date()
-
             const updatedPost = await concernedPost.save()
             return res.status(201).json({ updatedPost })
         } else {

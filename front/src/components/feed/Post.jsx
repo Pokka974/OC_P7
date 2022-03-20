@@ -239,16 +239,20 @@ export default function Post({user, post, token, update}) {
                         layout='fixed'
                     />
 
-                    <form className='flex flex-1'>
+                    <form className='flex flex-1 items-center space-x-2'>
                         <input 
                             className='rounded-full h-12 bg-gray-100 grow px-5 focus:outline-none'
                             type='text'
                             ref={inputRef} 
                             placeholder={`Un commentaire ${user.username}?`}
                         />
-                        <button className='pl-2' onClick={sendPost}>Envoyer</button>
+                        
+                        <button className='hidden md:block text-sm' onClick={sendPost}>Envoyer</button>
                     </form>
                 </div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="ml-auto block md:hidden h-6 w-6 mb-3 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
             </div>
             
         </div>
