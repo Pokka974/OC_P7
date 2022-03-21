@@ -40,6 +40,6 @@ All of theses features are persistent with RESTful API and Postgresql/Sequelize 
 
 
 ## Demo
-![Alt Text](https://media.giphy.com/media/NQ7o0BmaJ8VrbVjjDl/giphy.gif)
+![Alt Text](https://media.giphy.com/media/EBIyOIRUAcWqysqMvD/giphy.gif)
 ![Alt Text](https://media.giphy.com/media/NQ7o0BmaJ8VrbVjjDl/giphy.gif)
 
