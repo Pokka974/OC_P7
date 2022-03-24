@@ -29,7 +29,7 @@ Install all the dependencies with npm and how to run it on localhost
     
 ## Features
 All of theses features are persistent with RESTful API and Postgresql/Sequelize database
-- Singup/Login
+- Signup/Login
 - Post feed
 - Post something with or without images
 - Comment posts and comments
