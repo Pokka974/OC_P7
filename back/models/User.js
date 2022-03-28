@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     attachment: {
       allowNull: false,
-      defaultValue:'https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg', //add a default profile pic
+      defaultValue: 'https://frc.research.vub.be/sites/default/files/styles/large/public/thumbnails/image/basic-profile-picture_5.jpg', //add a default profile pic
       type: DataTypes.STRING
     },
     is_admin: {
