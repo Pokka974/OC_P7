@@ -4,7 +4,7 @@ import api from '../../conf/apiConf'
 import useAuth from '../../hooks/useAuth'
 import ToggleMenu from '../helpers/ToggleMenu'
 
-export default function Comment({comment, token, user, update, updateComment}) {
+export default function Comment({comment, token, toggle, user, update, updateComment}) {
 
     const { auth } = useAuth()
     const [author, setAuthor] = useState()
@@ -171,7 +171,7 @@ export default function Comment({comment, token, user, update, updateComment}) {
                             </svg>
                             {/* Invisible modal for Delete and update post */}
                             {toggleMenu && 
-                                (<ToggleMenu id={comment.id} update={() => update()} updateComment={() => updateComment()} />)
+                                (<ToggleMenu id={comment.id} toggle={() => toggle()} update={() => update()} updateComment={() => updateComment()} />)
                             }
                         </div>
                     }
@@ -210,6 +210,7 @@ export default function Comment({comment, token, user, update, updateComment}) {
                         comment={c}
                         token={token}
                         user={user}
+                        toggle={() => toggle()}
                         update={() => update()}
                     />  
                 ))}

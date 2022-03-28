@@ -10,9 +10,10 @@ export default function Post({user, post, token, update}) {
     const [author, setAuthor] = useState()
     const [comments, setComments] = useState()
     const [likes, setLikes] = useState(0)
-    
+    const [toggleEdit, setToggleEdit] = useState(false)
     const [toggleMenu, setToggleMenu] = useState(false)
     const inputRef = useRef(null)
+    const editInputRef = useRef(null)
 
     useEffect(() => {
         refreshComments()
@@ -129,6 +130,23 @@ export default function Post({user, post, token, update}) {
         setToggleMenu(!toggleMenu)
     }
 
+    const editPost = () => {
+        console.log(editInputRef.current.value);
+
+        if(!editInputRef.current.value || editInputRef.current.value === post.content) return
+
+        const data = {
+            content: editInputRef.current.value
+        }
+        api.put(`post/${post?.id}`, data, {
+            headers: {
+                authorization: 'Bearer ' + token
+            }
+        })
+        .then(res => update())
+        .catch(err => console.log(err))
+    }
+
     return (
         <div  className='flex flex-col'>
 
@@ -162,13 +180,35 @@ export default function Post({user, post, token, update}) {
                         {/* Invisible modal for Delete and update post */}
 
                         {toggleMenu && 
-                            (<ToggleMenu id={post.id} update={() => update()} updateComment={() => refreshComments()}/>)
+                            (<ToggleMenu id={post.id} toggle={() => setToggleMenu(!toggleMenu)} edit={() => setToggleEdit(!toggleEdit)} update={() => update()} updateComment={() => refreshComments()}/>)
                         }   
 
                     </div>
                     
                 </div>
-                <p className='pt-4'>{post.content}</p>
+                <div>
+                    {
+                        toggleEdit ? 
+                            <div className='relative w-full'>
+                                <textarea ref={editInputRef} className='bg-gray-100 mt-4 p-2 shadow-sm rounded-lg w-full ring-1 ring-orange-400' rows={8}>
+                                {post?.content}
+                                </textarea>
+                                <button className='absolute right-2 bottom-4 border p-1 rounded-lg hover:bg-blue-400 
+                                text-sm font-bold hover:text-white' 
+                                onClick={() => {
+                                    editPost()
+                                    setToggleEdit(false)
+                                    setToggleMenu(false)
+                                }} >Envoyer</button>
+                            </div>
+                            
+                        : 
+                            (<p className='pt-4'>{post?.content}</p>)
+                        
+                    }
+                </div>
+                
+                
             </div>
 
             {/* POST ATTACHMENT */}
@@ -225,6 +265,7 @@ export default function Post({user, post, token, update}) {
                         token={token}
                         user={user}
                         update={() => update()}
+                        toggle={() => setToggleMenu(!toggleMenu)}
                         updateComment={() => refreshComments()}
                     />)
                 )}

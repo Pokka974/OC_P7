@@ -10,10 +10,6 @@ exports.getLikeFromPost = async (req, res , next) => {
     
 }
 
-// exports.getDislikeFromPost = (req, res , next) => {
-    
-// }
-
 exports.getLikeFromUserAndPost = async (req, res, next) => {
     console.log(req.auth.userId);
     console.log(req.params.id);
@@ -41,9 +37,6 @@ exports.like = (req, res , next) => {
     })
 }
 
-// exports.dislike = (req, res , next) => {
-
-// }
 
 exports.deleteLike = async (req, res , next) => {
     console.log('DELETE LIKE CONTRLR');

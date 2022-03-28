@@ -64,7 +64,7 @@ const Login = () => {
                     <form className='w-4/5 flex flex-col gap-y-4 mt-2' onSubmit={ handleSubmit }>
                         <Field className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='email' name='email' placeholder='Email' onChange={handleChange} onBlur={handleBlur} />
                         {errors.email && touched.email && <div className="text-red-500">{errors.email}</div>}
-                        <Field className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='password' name='password' placeholder='Mot de passe' onChange={handleChange} onBlur={handleBlur} />
+                        <Field  className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='password' name='password' placeholder='Mot de passe' onChange={handleChange} onBlur={handleBlur} />
                         {errors.password && touched.password && <div className="text-red-500">{errors.password}</div>}
                         <button className='bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='submit' disabled={isSubmitting}>Se Connecter</button>
                     </form>

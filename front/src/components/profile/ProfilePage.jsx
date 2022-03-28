@@ -108,7 +108,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className='min-h-screen h-full flex-col w-screen min-w-screen'>
+        <div className='min-h-screen h-full flex-col w-screen min-w-screen max-w-screen'>
             <div className='flex justify-center relative h-64 bg-gray-600'>
                 <div className='group absolute -bottom-6 cursor-pointer'>
                     <div className='relative'>

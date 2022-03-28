@@ -1,5 +1,5 @@
-module.exports = (sequelize, DataTypes) => { // Exporte le modèle
-  const User = sequelize.define("users", { // Crée la table User, avec les colonnes username, password, et isAdmin
+module.exports = (sequelize, DataTypes) => { 
+  const User = sequelize.define("users", { 
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -23,19 +23,18 @@ module.exports = (sequelize, DataTypes) => { // Exporte le modèle
       allowNull: false,
       defaultValue: false,
     }
-  });
+  })
 
-  // Un user peut avoir plusieurs likes, posts ou commentaire
   User.associate = (models) => {
     User.hasMany(models.likes, {
       onDelete: "cascade",
-    });
+    })
 
     User.hasMany(models.posts, {
       onDelete: "cascade",
-    });
+    })
 
-  };
+  }
 
-  return User;
-};
+  return User
+}

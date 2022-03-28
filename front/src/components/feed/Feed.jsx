@@ -11,9 +11,9 @@ const Feed = () => {
       { user && (
         <div>
           <Header />
-          <section className=''>
+          <main className=''>
             <PostsContainer user={user} />
-          </section>
+          </main>
         </div>
       )}
     </> 

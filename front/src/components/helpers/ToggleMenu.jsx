@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import api from '../../conf/apiConf'
 
-export default function ToggleMenu({id, update, updateComment}) {
+export default function ToggleMenu({id, toggle, edit, update, updateComment}) {
 
     const [token] = useState(() =>{ return JSON.parse(localStorage.getItem('user')).token})
+    
     const deletePost = () => {
         api.delete(`post/${id}`, {
             headers: {
@@ -11,15 +12,20 @@ export default function ToggleMenu({id, update, updateComment}) {
             }
         })
         .then(res => {
+            console.log(res)
             update()
             updateComment()
         })
         .catch(err => console.log(err))
     }
+   
 
     return (
         <ul className='absolute right-10 top-0 flex-col space-y-2 shadow-xl p-1  z-30 bg-white rounded-lg'>
-            <div className='flex space-x-4 items-center cursor-pointer hover:bg-gray-100 w-40 p-2 rounded-lg'>
+            <div onClick={() => {
+                edit()
+                toggle()
+            } } className='flex space-x-4 items-center cursor-pointer hover:bg-gray-100 w-40 p-2 rounded-lg'>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
@@ -27,6 +33,7 @@ export default function ToggleMenu({id, update, updateComment}) {
             </div> 
             <div onClick={() => {
                 if(window.confirm('Voulez vous vraiment supprimer ce post?')){
+                    toggle()
                     deletePost()
                 }
             }} className='flex space-x-4 items-center cursor-pointer hover:bg-gray-100 w-40 p-2 rounded-lg'>

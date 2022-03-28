@@ -27,6 +27,7 @@ const PostsContainer = () => {
           if(res){
               res.data.map((p) => !p.postId && originalPostsArr.push(p) )
               setOriginalPosts(originalPostsArr)
+
           }
       })
       .catch(err => console.log('NO POST'))

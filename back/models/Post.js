@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-	// Crée la table Posts
+	
 	const Post = sequelize.define('posts', {
 		post_type: {
 			allowNull: false,
@@ -15,8 +15,6 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	})
 
-	// Associe les commentaires et les likes aux posts
-	// Quand on supprime un post, ça supprime tout les commentaires et likes liés
 	Post.associate = (models) => {
 		Post.hasMany(models.posts, {
 			onDelete: 'cascade',

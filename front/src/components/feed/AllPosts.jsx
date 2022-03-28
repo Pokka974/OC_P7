@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
 import { Post } from '../../components'
-import api from '../../conf/apiConf'
 
 export default function AllPosts({token, user, posts, update}) {
 
     
     return (
-        <div className='h-full'>
+        <div className='h-full min-h-screen'>
             {posts ? posts.slice(0).reverse().map((p) => (
                 <Post 
                     user={user}
