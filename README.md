@@ -19,6 +19,7 @@ Install all the dependencies with npm and how to run it on localhost
 ```bash
   cd back/
   npm install
+  (Make sure to link a database)
   npm run start
   
   cd ..
@@ -32,6 +33,7 @@ All of theses features are persistent with RESTful API and Postgresql/Sequelize 
 - Signup/Login
 - Post feed
 - Post something with or without images
+- Modify Post's content
 - Comment posts and comments
 - Like posts and comments
 - Edit your profile picture
