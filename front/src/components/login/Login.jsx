@@ -35,14 +35,17 @@ const Login = () => {
                 }
                 localStorage.setItem('user', JSON.stringify(authUser))
                 setAuth({...res.data})
-                navigate('/')
+                navigate('/feed')
             })
             .catch(err => console.log(err))
     }
 
     const userSchema = () => Yup.object().shape({
         email: Yup.string().email("L'email doit être valide").required('Champ requis'),
-        password: Yup.string().min(5, 'Trop court').required('Champ requis')
+        password: Yup.string().required('Champ requis').matches(
+            /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/,
+            "Le mot de passe doit contenir au moins 6 charactères dont au moins 1 charactère spécial, une majuscule et un chiffre"
+          ),
     });
 
 
@@ -64,14 +67,14 @@ const Login = () => {
                     <form className='w-4/5 flex flex-col gap-y-4 mt-2' onSubmit={ handleSubmit }>
                         <Field className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='email' name='email' placeholder='Email' onChange={handleChange} onBlur={handleBlur} />
                         {errors.email && touched.email && <div className="text-red-500">{errors.email}</div>}
-                        <Field  className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='password' name='password' placeholder='Mot de passe' onChange={handleChange} onBlur={handleBlur} />
+                        <Field type='password' className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-500 h-16' id='password' name='password' placeholder='Mot de passe' onChange={handleChange} onBlur={handleBlur} />
                         {errors.password && touched.password && <div className="text-red-500">{errors.password}</div>}
                         <button className='bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='submit' disabled={isSubmitting}>Se Connecter</button>
                     </form>
                 )}
             </Formik>
             <h2 className='self-start mt-8 mx-16 h-16 text-xl font-bold'>Pas encore inscrit ?</h2>
-            <Link className='w-4/5' to='/signup'>
+            <Link className='w-4/5' to='/'>
                 <button className='w-full border bg-white hover:bg-blue-400 hover:text-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' type='button'>S'inscrire</button>
             </Link>
         </div>

@@ -21,7 +21,7 @@ Add a .env file inside the back/ folder as such:
 ```bash
 NODE_ENV="test"
 SECRET_KEY=""
-CI_DB_USERNAME=""
+CI_DB_USERNAME="" (postgres by default)
 CI_DB_PASSWORD=""
 CI_DB_NAME=""
 ```

@@ -9,12 +9,13 @@ function App(){
         <Route path='/' element={<Layout />}>
 
           {/* public routes */}
+          
+          <Route path='/' element={<Signup />} />
           <Route path='login' element={<Login />} />
-          <Route path='signup' element={<Signup />} />
  
           {/* protected routes */}*
           <Route element={<RequiredAuth />}>
-            <Route path='/' element={<Feed />} />
+            <Route path='feed' element={<Feed />} />
             <Route path='profile/:id' element={<ProfilePage />} />
           </Route>
           {/* catch all */}

@@ -42,11 +42,14 @@ const Signup = () => {
     const userSchema = () => Yup.object().shape({
         name: Yup.string('String').min(4, 'Trop court').max(35, 'Trop long').required('Champ requis'),
         email: Yup.string().email("L'email doit être valide").required('Champ requis'),
-        password: Yup.string().min(5, 'Trop court').required('Champ requis')
+        password: Yup.string().required('Champ requis').matches(
+            /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/,
+            "Le mot de passe doit contenir au moins 6 charactères dont au moins 1 charactère spécial, une majuscule et un chiffre"
+          ),
       });
       
     return (
-        <div className='flex flex-col-reverse md:flex-row'>
+        <div className='flex flex-1 flex-col-reverse md:flex-row'>
             <div className='w-full relative md:w-3/5'>
                 <img className='object-cover h-screen w-full' alt='presentation' src={welcomeImg}/>
                 <img className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' src={icon} alt='logo' />
