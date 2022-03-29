@@ -16,10 +16,20 @@ This project is part of the Openclassroom bootcamp process.
 
 Install all the dependencies with npm and how to run it on localhost
 
+Add a .env file inside the back/ folder as such:
+
+```bash
+NODE_ENV="test"
+SECRET_KEY=""
+CI_DB_USERNAME=""
+CI_DB_PASSWORD=""
+CI_DB_NAME=""
+```
+
 ```bash
   cd back/
   npm install
-  (Make sure to link a database)
+  (Make sure to link a database or to have a .env file)
   npm run start
   
   cd ..
