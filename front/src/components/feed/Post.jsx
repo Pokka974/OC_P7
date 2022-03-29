@@ -154,7 +154,7 @@ export default function Post({user, post, token, update}) {
 
             <div className='p-5 bg-white mt-5 rounded-t-2xl shadow-md'>
                 <div className='flex justify-between'>
-                    <Link to={`profile/${author?.id}`} className='flex items-center space-x-2 cursor-pointer group'>
+                    <Link to={`/profile/${author?.id}`} className='flex items-center space-x-2 cursor-pointer group'>
                         <img 
                             className='rounded-full object-cover h-12 w-12'
                             src={author?.attachment}

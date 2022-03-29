@@ -34,7 +34,7 @@ const Signup = () => {
                 }
                 localStorage.setItem('user', JSON.stringify(authUser))
                 setAuth({...res.data})
-                navigate('/')
+                navigate('/feed')
             })
             .catch(err => console.log(err))
     }

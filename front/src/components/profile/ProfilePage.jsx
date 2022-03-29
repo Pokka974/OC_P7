@@ -136,7 +136,7 @@ export default function ProfilePage() {
            
             <div className='bg-gray-100 pt-2 h-full'>
                 <div className='mx-auto max-w-sm md:max-w-lg lg:max-w-2xl xl:max-w-2xl transition-all min-h-screen h-full'>
-                    {user && <Inputbox token={token} user={user} update={() => refreshPosts()} /> }
+                    {user && <Inputbox token={token} user={auth} update={() => refreshPosts()} /> }
                     {user && <AllPosts
                                 token={token}
                                 user={user}

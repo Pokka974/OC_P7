@@ -13,7 +13,7 @@ const RequiredAuth = () => {
     useEffect(() => {
         api.get(`user/${user?.id}`, {
             headers: {
-                authorization: 'Beaer ' + user.token
+                authorization: 'Bearer ' + user.token
             }
         })
         .then(res => setAuth(res.data))
@@ -23,7 +23,7 @@ const RequiredAuth = () => {
     return (
         auth && user
             ? <Outlet />
-            : <Navigate to='/login' state={{ from: location }} replace />
+            : <Navigate to='login' state={{ from: location }} replace />
     )
 }
 

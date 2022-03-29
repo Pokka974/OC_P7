@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 
 export default function Navbar() {
@@ -20,7 +20,6 @@ export default function Navbar() {
           }
           {auth && <p className='hidden md:block font-bold'>{auth.username}</p>}
         </Link>
-        
       }
     </>
     
