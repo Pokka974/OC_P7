@@ -2,7 +2,7 @@
 # Groupomania
 
 An online software tool that facilitate online groupwork. 
-Entreprise Social Network inspired by Facebook/Workplace Design.
+Enterprise Social Network inspired by Facebook/Workplace Design.
 This project is part of the Openclassroom bootcamp process.
 
 
